@@ -1,0 +1,82 @@
+.fo 'Xap'%'Assignment Journal'
+\" view this file in a terminal with the command nroff -me todo.me margins.me | less -R
+\" or by using groff -me -Tps todo.me > todo.ps, then opening todo.ps with any pdf file
+\" viewer (assuming they support PostScript files)
+.ls 2
+.sp 6
+.ce 1
+.b "Systhmata Polymeswn Assignment Journal -- Xap"
+.sp 6
+.he ''Systhmata Polymeswn Assignment Journal''' \" this is here so it only exists after the 2nd page
+.pp GSM 06.10 recommendation! Poso koul!
+.sh 1 "Eksoikeiwsh me ekfwnhsh -- 24.12.24"
+.pp
+Ti mas zhtaei h ekfwnhsh tou 1ou paradoteou; Wrapper to read/write
+160 samples from a .wav file. Check out what those weird functions
+in the pictures mean.
+.pp
+Also this journal will either be in english or greeklish because
+groff can't handle greek characters well.
+.sh 2 "Baby steps"
+.pp
+Exw ton akoloythw kwdika:
+.(q
+LARc: np.ndarray, curr_frame_st_resd: np.ndarray = RPE_frame_st_coder(
+s0: np.ndarray
+)
+.)q
+Afto shmainei oti h synarthsh
+.i RPE_frame_st_coder
+pairnei san argument to 
+.i s0 , 
+to opoio einai numpy array,
+kai exei return values dyo numpy arrays, poy ginontai
+assign sta 
+.i LARc ,
+kai 
+.i curr_frame_st_resd .
+Apo,ti katalavainw sto prwto paradoteo prepei apo to s0
+na vroume ta LARc kai curr_frame_st_resd (current frame short term residual)
+kai epeita na kanoume thn antistrofh diadikasia ths apokwdikopoihshs, apo ta LARc
+kai to curr_frame_st_resd na vroume to s0. Prwto vhma eksakolouthei na einai
+to na melethsw th domh enos .wav arxeiou. 
+.pp 
+I know we have a wav file of 8kHz sampling rate, but how many bits in a sample?
+8 or 16? Do we need to support both? The provided sample wav file has 16 bits
+per sample.
+.pp
+Using python's
+.i wave
+module, interfacing with .wav files seems quite easy and straightforward.
+.sh 2 "Taking a break -- audio_wrapper.py"
+.pp
+I have all I need to be able to read 160 frames from a .wav file. Implement
+a function named 
+.i audio_wrapper_read_data
+to do exactly that. Gia twra paw na kanw ena dialleimma plenontas piata kai 
+trwgontas meshmeriano. 
+.pp 
+E, na mhn pesw kai gia mia meshmerianh siesta!!!
+.sh 2 "Implementing audio_wrapper_read_data()"
+.pp
+I've returned, and I am storing 160 samples in a numpy array called s0,
+but it seems it is passed as a string? So s0 only has one element, that of
+all the samples of the audio data. I need to find some way to make the 
+.i "audio_data.readframes()"
+function return an array of bytes instead of a string, or a singular element,
+whichever it is. I have a suspicion that the samples are in buffer-like 
+objects and I can laod them in via the 
+.i "numpy.frombuffer()"
+function.
+.pp
+I felt really tired and gave up for today... There's always tomorrow!
+.sh 1 "audio_wrapper_read_data() continuation -- 25/12/24"
+.pp
+Only started working in the evening. I asked ChatGPT how to convert from
+readframes() to numpy array. 
+.pp
+The results are in! Using numpy.frombuffer() and changing the
+dtype depending on sample width (8 or 16-bit), creates a two-dimensional 
+1x160 numpy array. If I then ravel() it, I get my precious one-dimensional
+numpy byte array. audio_wrapper_read_data() is finished! It also quits 
+if the .wav file doesn't have 8 or 16 bits per sample.
