@@ -124,4 +124,10 @@ s = [k, 159] and k = 0,1,...,8. Since we know all rs(k)s, we can
 calculate a1,a2,...,a8 from the normal matrix equations. Let's
 do it! 
 .pp
-The autocorrelations are done, seems like that was pretty easy.
+The autocorrelations are done, seems like that was pretty easy. So are the
+prediction coefficients ak. Next step is to find the LARc. I am a bit troubled,
+do I calculate the residual with ak or with LARc? I need to use the function 
+.i "polynomial_coeff_to_reflection_coeff()"
+from hw_utils.py. What is the meaning of the second argument, 
+.q e_final
+?
