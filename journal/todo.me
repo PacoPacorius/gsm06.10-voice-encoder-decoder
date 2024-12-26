@@ -79,4 +79,49 @@ The results are in! Using numpy.frombuffer() and changing the
 dtype depending on sample width (8 or 16-bit), creates a two-dimensional 
 1x160 numpy array. If I then ravel() it, I get my precious one-dimensional
 numpy byte array. audio_wrapper_read_data() is finished! It also quits 
-if the .wav file doesn't have 8 or 16 bits per sample.
+if the .wav file doesn't have 8 or 16 bits per sample. 
+.sh 2 "Planning for the future"
+.pp
+I talked with Giwrgos about the structure of this assignment. I'm to
+implement the read aspect of the audio wrapper (already done) and the 
+encoder part. I should make my own branch for the encoder. The encoder
+should be on a separate file (separate even to the decoder) and another
+.q main
+-like file should call everything from a central point. 
+.pp 
+Giwrgos made a good point, it doesn't matter how many times I call
+audio_wrapper_read_data(), it will only get the first 160 samples of the wav
+file. When I complete the encoder, I should test it with a modified 
+audio_wrapper_read_data() function. It will make use of a counter of how
+many times I called it and audio_data.setpos() to set the required offset.
+.pp
+I'm feeling quite sleepy at 22:20 p.m., so I should make me some light food
+and then go to bed early, Thursday is a day of work but Friday will be 
+dedicated to accompanying my dad on a work-related trip, so that day will be 
+wasted.
+.sh 1 "Decoder 1st deliverable start -- 26/12/24"
+.pp 
+Started really late, 13:30 p.m. Pretty frustrated and angry that I spent
+most of my night and my morning played brain-dead video games on my phone. 
+I have now deleted all of them and I vow to not install any more in the near
+future. But for now let's calm down and focus on this.
+.pp 
+At some point I should check out how to 
+.i "import local files"
+and 
+.i "return multiple variables"
+from a function in python. For now I'll start with the 
+.i RPE_frame_st_coder()
+function. Pws vriskw ta LARc kai curr_frame_st_resd; H mallon akoma
+kalytera, poio apo ta dyo prepei na vrw prwto kai pws; Kseroume oti 
+vriskomaste sto short term analysis. Ok prwta ypologizoume ta LARc kai meta
+to short term residual. Omws pws ypologizoume ta ak? Pws xrhsimopoioume thn 
+Rw = r?
+.sh 2 "Calculating LARc using normal equations"
+.pp
+Ok, so this is easier than it seems. rs(k) = Sum(s(i)s(i-k)), where
+s = [k, 159] and k = 0,1,...,8. Since we know all rs(k)s, we can
+calculate a1,a2,...,a8 from the normal matrix equations. Let's
+do it! 
+.pp
+The autocorrelations are done, seems like that was pretty easy.

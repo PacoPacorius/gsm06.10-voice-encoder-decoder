@@ -3,7 +3,7 @@ import wave
 import numpy
 
 
-def audio_wrapper_read_data(file_wav_audio, no_of_samples):
+def read_data(file_wav_audio, no_of_samples):
     # open wav file in read format
     audio_data = wave.open(file_wav_audio, 'rb')
 
@@ -28,11 +28,11 @@ def audio_wrapper_read_data(file_wav_audio, no_of_samples):
 
 
 # get s0, then make it one-dimensional
-s0 = numpy.array([audio_wrapper_read_data("/home/pacopacorius/test2.wav", 160)])
-s0 = numpy.ravel(s0)
-print("Dimensions of numpy array s0 = ", numpy.ndim(s0), 
-      "\nSize of numpy array s0 = ", numpy.size(s0),
-      "\nShape of numpy array s0 = ", numpy.shape(s0),
-      "\nLength of numpy array s0 = ", len(s0),
-      "\nNumpy array s0 = ", s0,
-      "\ns0[5] = ", s0[5])
+#s0 = numpy.array([audio_wrapper_read_data("/home/pacopacorius/test2.wav", 160)])
+#s0 = numpy.ravel(s0)
+#print("Dimensions of numpy array s0 = ", numpy.ndim(s0), 
+      #"\nSize of numpy array s0 = ", numpy.size(s0),
+      #"\nShape of numpy array s0 = ", numpy.shape(s0),
+      #"\nLength of numpy array s0 = ", len(s0),
+      #"\nNumpy array s0 = ", s0,
+      #"\ns0[5] = ", s0[5])
