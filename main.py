@@ -3,7 +3,7 @@ import wave
 import numpy
 
 import audio_wrapper
-import decoder
+import encoder
 import preprocessing
 
 # read data from wav file 
@@ -17,4 +17,4 @@ s0 = preprocessing.pre_emphasis(s0)
 
 print('main after pre-processing s0 = ', s0.astype(numpy.int64), ' s0 length: ', len(s0))
 # short term analysis
-decoder.RPE_frame_st_coder(s0)
+encoder.RPE_frame_st_coder(s0)
