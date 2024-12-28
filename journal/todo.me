@@ -130,4 +130,58 @@ do I calculate the residual with ak or with LARc? I need to use the function
 .i "polynomial_coeff_to_reflection_coeff()"
 from hw_utils.py. What is the meaning of the second argument, 
 .q e_final
-?
+? It has a default value, so I'm going to leave it as it is right now.
+.pp
+Reflection coefficient generation has failed... It seems like the algorithm 
+fails when any of a1, a2,... are equal to 1 or -1. This is probably a skill
+issue on my part, maybe I did something wrong on the way? Or do I have to 
+provide a final_error other than the default? I'll try to get another set 
+of 160 samples from the audio wav file for now.
+.pp
+Trying different positions on different files shows that my code mostly 
+fails rather works even sooner than the reflection coefficient calculation.
+The matrix multiplication part seems to either underflow or overflow in some
+mystical way. 
+.pp
+In certain positions there seems to be an overflow when multiplying two 
+scalars s0[i]*s0[i-k], part of calculating the autocorrelation's 
+approximation. Let's try solving this first, then worrying about aks being 1.
+Setting up a try...except block doesn't catch the exception, but using
+the numpy.multiply function made it stop complaining about the multiplication
+overflow.
+.pp 
+The reflection coefficients can be calculated for 16-bit wav audio if I set
+the initial file cursor position to 493. Anything earlier than that makes it
+fail due to 
+.q "singular matrix"
+error. The .wav file header is only 44-bytes long, why do I have to go that 
+far for the program to work? 8-bit wav audio still doesn't work at all. 
+Correction, 8-bit wav also works if I go far enough into the file... What is 
+this sorcery??? I'm taking a break to work out, take a shower, throw out the
+garbage and eat lunch.
+.sh 2 "Figuring out what's wrong"
+.pp
+I have a hunch that the problem is the way I am getting samples from the .wav
+file in the audio_wrapper. I am currently reading a web article explaining how
+wav files work. If after reading I still can't make it work, I should try
+another method of getting samples from a wav file other than the wave module.
+Maybe 
+.i scipy
+will do the job?
+.pp
+For now, web article.
+.sh 2 "Simple fix, then immediately getting stuck again"
+.pp
+Following a conversation with my friend Alex I found out that I had forgot
+the sum part of the autocorrelation! I just multiplied! No wonder that was 
+full of errors... Now that that is fixed, no singular matrices exceptions, no
+multiplication overflows and the reflection coefficients get calculated 
+without any protests. However... When I try to calculate the Log Are Ratios,
+I find that, while the ak array is of size 8, the reflection coefficients 
+array is 
+.i "size 7"
+! How do I fix this? Is this even intentional? Shouldn't they all have size 
+8? What a mystery... I will continue to study this phenomenon in the coming 
+days... Or just send an email asking if this behavior is expected. Probably 
+won't do any work tomorrow due to previously mentioned work trip. Maybe 
+Saturday again?

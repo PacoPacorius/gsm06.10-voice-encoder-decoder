@@ -8,6 +8,8 @@ def read_data(file_wav_audio, no_of_samples):
     audio_data = wave.open(file_wav_audio, 'rb')
 
     # read 160 frames (samples) from the audio file
+    print('total audio frames = ', audio_data.getnframes())
+    audio_data.setpos(000)  # test different positions of the same file
     samples = audio_data.readframes(no_of_samples)
 
     # does our sound file have 8-bits or 16-bits per sample?
@@ -17,9 +19,9 @@ def read_data(file_wav_audio, no_of_samples):
     # return one-dimensional numpy array with element size dependent on 
     # sample width (in bytes)
     if sample_width == 2:
-        return numpy.frombuffer(samples, numpy.int16)
+        return numpy.frombuffer(samples, 'i2')
     elif sample_width == 1:
-        return numpy.frombuffer(samples, numpy.int8)
+        return numpy.frombuffer(samples, 'i1')
     else:
         sys.exit("""
                 Non-standard bits-per-sample WAV file. 
