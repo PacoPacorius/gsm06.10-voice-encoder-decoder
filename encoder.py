@@ -39,15 +39,6 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
     # solve normal equation to w
     w = numpy.linalg.solve(R, r)
 
-    #try:
-        #w = numpy.linalg.solve(R, r)
-    #except numpy.linalg.LinAlgError as err:
-        #if 'Singular matrix' in str(err):
-            #print("""\nR is a singular matrix, approximating using the method 
-                     #of least squares""")
-            #w = numpy.linalg.lstsq(R, r)[0]
-        #else:
-            #raise
 
     print('w after solving = ', w)
     for i in range(0,8):
@@ -59,15 +50,64 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
     print('kr after solving = ', kr, ' size of kr = ', kr.size)
 
     # convert reflection coefficients to Log-Area-Ratios
-    LARc = numpy.zeros(8)
-    for i in range(0,8):
+    LAR = numpy.zeros(7)
+    LARc = numpy.zeros(7)
+    for i in range(0,7):
         abs_kr = numpy.absolute(kr[i-1])
         if abs_kr < 0.675:
-            LARc[i] = kr[i-1]
+            LAR[i] = kr[i-1]
         elif abs_kr >= 0.675 and abs_kr < 0.950:
-            LARc[i] = numpy.sign(kr[i-1]) * (2*abs_kr - 0.675)
+            LAR[i] = numpy.sign(kr[i-1]) * (2*abs_kr - 0.675)
         elif abs_kr >= 0.950 and abs_kr <= 1:
-            LARc[i] = numpy.sign(kr[i-1]) (8*abs_kr - 6.375)
+            LAR[i] = numpy.sign(kr[i-1]) (8*abs_kr - 6.375)
 
-    print('LARc = ', LARc)
+    print('LAR = ', LAR, ' size of LAR = ', LAR.size)
 
+    # quantize and encode LAR to LARc
+    for i in range(0,7):
+        LARc[i] = Nint(A(i)*LAR[i] + B(i))
+
+    print('LARc = ', LARc, ' size of LARc = ', LARc.size)
+
+
+
+###################################
+######## HELPER FUNCTIONS #########
+###################################
+
+# round to closest integer value
+def Nint(z):
+    return int(z + numpy.sign(z)*0.5)
+
+# define LAR quantization and coding coefficients
+def A(i):
+    if i == 1 or i == 2 or i == 3 or i == 0:
+        return 20.
+    elif i == 4:
+        return 13.637
+    elif i == 5:
+        return 15.
+    elif i == 6:
+        return 8.334
+    elif i == 7:
+        return 8.824
+    else:
+        return None
+
+def B(i):
+    if i == 1 or i == 0:
+        return 0.
+    elif i == 2: 
+        return 4.
+    elif i == 3:
+        return -5.
+    elif i == 4:
+        return 0.184
+    elif i == 5:
+        return -3.5
+    elif i == 6:
+        return -0.666
+    elif i == 7:
+        return -2.235
+    else:
+        return None

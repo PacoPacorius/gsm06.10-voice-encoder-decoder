@@ -185,3 +185,27 @@ array is
 days... Or just send an email asking if this behavior is expected. Probably 
 won't do any work tomorrow due to previously mentioned work trip. Maybe 
 Saturday again?
+.sh 1 "Implementing Pre-Processing -- 28/12/2024"
+.pp
+Giwrgos was right, pre-processing is a completely different step from short-term 
+analysis. I implemented this today without too many problems. Sent an email to 
+daletras@ece.auth.gr to ask about two things:
+.(l
+1. Whether we need to support both 8-bit and 16-bit wav files and both big-endian 
+and little-endian byte orders.
+2. If having 7 elements in the reflection coefficient array is expected behavior.
+.)l
+.sh 1 "Marching on -- 29/12/2024"
+.pp
+Response email hasn't arrived yet, so I will continue with the 7 reflection
+coefficients as if nothing has happened.
+.sh 2 "Quantizing and encoding LARc array"
+.pp
+Section 3.1.7 of the codec covers this. It was pretty easy, just some 
+simple arbitrary calculations. The results don't look too quantized / encoded
+to me, but who am I to judge, right?
+.pp
+I did notice that my reflection coefficients are also not in the desired range 
+of (-1, 1]. That is further cause for concern, but for now I will wait for 
+the answer from Dimitris Aletras.
+.sh 2 "Short-term analysis filtering and "
