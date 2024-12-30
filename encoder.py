@@ -31,9 +31,11 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
                      [rs[6], rs[5], rs[4], rs[3], rs[2], rs[1], rs[0], rs[1]],
                      [rs[7], rs[6], rs[5], rs[4], rs[3], rs[2], rs[1], rs[0]]])
 
+    e_final = rs[0]
     a = numpy.zeros(8)
     w = numpy.zeros((0,8))
 
+    print('e_final = ', e_final)
     print('r = ', r)
     print('R = ', R)
     #print('w = ', w)
@@ -47,7 +49,7 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
     print('a after solving = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
     # calculate reflection coefficients
-    kr = hw_utils.polynomial_coeff_to_reflection_coeff(a)
+    kr = hw_utils.polynomial_coeff_to_reflection_coeff(a, e_final)
     # append a 0 to kr so that it is of size 8, when you figure out what goes wrong, 
     # remove this line
     kr = numpy.append(kr, 0)
@@ -94,27 +96,30 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
 
     print('krd = ', krd, ' size of krd = ', krd.size)
 
-    # FIR filter coefficients initialize
-    fir_filter_num_coefficient = numpy.zeros(9)
-    for i in range (0,9):
-        if i == 0:
-            fir_filter_num_coefficient[i] = 1
-        else:
-            fir_filter_num_coefficient[i] = -LARd[i-1]
+    # get decoded akd from krd
 
-    print('fir_filter_num_coefficient = ', fir_filter_num_coefficient, ' size of fir_filter_num_coefficient = ', fir_filter_num_coefficient.size)
+    akd = numpy.zeros(8)
+    akd, e_final = hw_utils.reflection_coeff_to_polynomial_coeff(krd)
+    print('e_final = ', e_final)
+    print('akd = ', akd, ' size of akd = ', len(akd))
+    print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
+
+    # FIR filter coefficients initialize
+    #fir_filter_num_coefficient = numpy.zeros(9)
+    #for i in range (0,9):
+        #if i == 0:
+            #fir_filter_num_coefficient[i] = 1
+        #else:
+            #fir_filter_num_coefficient[i] = -a[i-1]
+
+    #print('fir_filter_num_coefficient = ', fir_filter_num_coefficient, ' size of fir_filter_num_coefficient = ', fir_filter_num_coefficient.size)
 
     # apply FIR filter and calculate residual
-    s_hat = scipy.signal.lfilter(fir_filter_num_coefficient, 1.0, s0)
-    print('s_hat = ', s_hat, ' size of s_hat = ', s_hat.size)
-
-    d = numpy.zeros(160)
-    for i in range (0,160):
-        d[i] = s0[i] - s_hat[i]
-
-    print('d = ', d, ' size of d = ', d.size)
+    curr_frame_st_residual = scipy.signal.lfilter(akd, 1.0, s0)
+    #print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
 
+    return LARc, curr_frame_st_residual
 
 ###################################
 ######## HELPER FUNCTIONS #########

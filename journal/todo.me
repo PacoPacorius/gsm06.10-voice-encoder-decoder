@@ -219,4 +219,19 @@ The residual is calculated by using an FIR filter with coefficients derived
 from LARd. I got quite perplexed at this point, is the output of the filter 
 the residual itself or the prediciton of s0, s_hat? I'm going to ask Giwrgos, 
 he said this part was easy so he might have a better understanding over it. 
-
+.sh 2 "Feedback"
+.pp
+Still no email. Giwrgos gave some feedback on my code. Here is what I need 
+to fix:
+.(l
+1. The FIR filter's output is the residual, not s_hat 
+2. The FIR filter's coefficients are the decoded ak, not the decoded LARd.
+3. e_final is autocorrelation's r[0]
+.)l
+I managed to implement all of these. We are awaiting for the email from Dimitris
+Aletras about the 8th kr. It is also not certain that the decoded ak is in
+FIR filter coefficient-ready form. Besides that, the encoder can be regarded as 
+finished.
+.pp
+I feel a bit tired from all this work. I think I should take a break from 
+this assignment for a few days.
