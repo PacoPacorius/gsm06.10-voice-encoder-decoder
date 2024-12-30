@@ -208,4 +208,15 @@ to me, but who am I to judge, right?
 I did notice that my reflection coefficients are also not in the desired range 
 of (-1, 1]. That is further cause for concern, but for now I will wait for 
 the answer from Dimitris Aletras.
-.sh 2 "Short-term analysis filtering and "
+.sh 1 "FIR filtering -- 30/12/24"
+.pp
+Email still hasn't come in. What is that guy up to? Marching on to FIR 
+filtering and prediction error calculation. These are covered by Sections 
+3.1.8 until 3.1.11. 
+.pp
+I was happy to see the decoded LARd and krd followed LAR and kr closely.
+The residual is calculated by using an FIR filter with coefficients derived
+from LARd. I got quite perplexed at this point, is the output of the filter 
+the residual itself or the prediciton of s0, s_hat? I'm going to ask Giwrgos, 
+he said this part was easy so he might have a better understanding over it. 
+
