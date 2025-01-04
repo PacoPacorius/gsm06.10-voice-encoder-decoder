@@ -235,3 +235,43 @@ finished.
 .pp
 I feel a bit tired from all this work. I think I should take a break from 
 this assignment for a few days.
+.sh 1 "Ironing the kinks -- 04/01/2025"
+.pp 
+I'm back! Dimitris Aletras responded to my email and Giwrgos pointed out some
+stuff in my code that requires attention, so there's some work to be done.
+.pp
+Dimitris's email pointed out two major points. First is that, at least for the
+scipy read function, it shouldn't matter if a wav file has 16-bit or 8-bit 
+samples. Secondly, Aletras says that we should use 9 elements as an input to
+polynomial_coeff_to_reflection_coeff, probably the same elements that comprise 
+the FIR filter, but do we use normal ak? We can't use ak' because those requre
+the reflection coefficients to be already calculated. Weird... To shmeio pou 
+mou eipe na koitaksw sthn ekfwnhsh den voithaei katholou, kai den vriskw th 
+nea ekdosh ths ekfwnhshs sto elearning... 
+.pp
+As far as Giwrgos' points are concerned, I should try a normal convolution 
+rather than using the ambiguous lfilter function when calculating the 
+residual... Or at least compare the results of both methods.
+.pp
+My plan is to test the scipy wav read method and the convolution, then 
+send an email asking for more information about the input to the function
+that generates the reflection coefficients, mention that I can't find the new
+version ths ekfwnhshs and add any more trouble I had along the way
+.sh 2 "Scipy wav read"
+.pp
+Testing the scipy wav read compared to the wave module read. Theoretically, 
+we shouldn't need to care about whether the wav samples are 16- or 8-bit.
+.pp
+Scipy wav read is a million times easier omg.... I'm using that one from now 
+on.
+.sh 2 "Normal convolution vs. lfilter"
+.pp
+I don't trust the scipy.signal.lfilter function, so I'll try using the FIR
+filter using normal convolution.
+.pp
+Convolution seems to work better, it's as if lfilter cropped out some values...
+.sh 2 "Sending da email"
+.pp
+I want to talk about reflection coefficients, clarifications on the output 
+of the FIR filter (with input of s0 and akd, output is s_hat or the residual?) 
+and ekfwnhsh not correctly uploaded.

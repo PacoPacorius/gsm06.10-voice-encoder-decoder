@@ -10,8 +10,7 @@ def reflection_coeff_to_polynomial_coeff(kr: np.ndarray):
         :param kr: (np.array) the vector containing the reflection coefficients
 
         :return: (np.array) the vector of polynomial coefficients,
-                (float) the final prediction error, e_final, based on 
-                the zero lag autocorrelation, R0 (default: 0.).
+                (float) the final prediction error, e_final, based on the zero lag autocorrelation, R0 (default: 0.).
         """
         
         

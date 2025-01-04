@@ -1,6 +1,7 @@
 import sys
 import wave
 import numpy
+import scipy
 
 
 def read_data(file_wav_audio, no_of_samples):
@@ -28,7 +29,10 @@ def read_data(file_wav_audio, no_of_samples):
                 Only 8 or 16-bits are allowed, quitting...""")
 
 
-
+def scipy_read_data(file_wav_audio):
+    sample_rate, audio_data = scipy.io.wavfile.read(file_wav_audio)
+    #print("***\nScipy method\n***\nSample rate = ", sample_rate, "\naudio_data = ", audio_data, ", length = ", len(audio_data))
+    return audio_data
 # get s0, then make it one-dimensional
 #s0 = numpy.array([audio_wrapper_read_data("/home/pacopacorius/test2.wav", 160)])
 #s0 = numpy.ravel(s0)
