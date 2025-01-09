@@ -1,0 +1,64 @@
+\documentclass{article} 
+\usepackage{polyglossia} 
+\usepackage{amsmath}
+\usepackage{fontspec} 
+\usepackage{lipsum} 
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx} 
+\usepackage{caption} 
+\usepackage{subcaption}
+\usepackage{hyperref} 
+\hypersetup{% 
+    colorlinks=true, linkcolor=blue, filecolor=magenta,      
+    urlcolor=cyan, 
+    pdfinfo = {% Title = Συστήματα
+        Πολυμέσων Υλοποίηση GSM 06.10 Author = Χρήστος Μάριος Περδίκης, Γιώργος
+        Β.  Producer = XeLaTeX 
+    } 
+}
+
+\title{Συστήματα Πολυμέσων Υλοποίηση GSM 06.10} 
+\author{Χρήστος Μάριος Περδίκης 10075 cperdikis@ece.auth.gr 
+\and Γιώργος RootCritter ?????  ?????????@ece.auth.gr} 
+\date{}
+
+\setmainfont{CMU Serif}
+
+\begin{document} \maketitle Το παρόν έγγραφο είναι η αναφορά της
+εργασίας του μαθήματος Συστήματα Πολυμέσων τη χρονιά 2024-2025.
+Κληθήκαμε να υλοποιήσουμε κωδικοποίηση φωνής σύμφωνα με το πρότυπο GSM
+06.10. Από τα τρία επίπεδα υλοποιήσαμε μέχρι το 1o.
+
+\section{Short Term Analysis} 
+\subsection{Audio Wrapper και main.py} Αρχικά
+δημιουργήσαμε ένα πολύ απλό audio wrapper πρόγραμμα ώστε να μπορούμε να
+μετατρέπουμε τα ηχητικά δεδομένα ενός wav αρχείου σε μορφή την οποία
+μπορεί να επεξεργαστεί από κώδικα, και μετά πάλι πίσω σε wav μορφή. Ο
+κώδικας του προγράμματος αυτού βρίσκεται στο αρχείο
+\emph{audio\_wrapper.py}. 
+
+Υπάρχουν δύο συναρτήσεις για την ανάγνωση wav αρχείων. Αρχικά
+κατασκευάσαμε τη συνάρτηση read\_data, η οποία έκανε χρήση του wave 
+module και διαβάζαμε $160$ frames του αρχείου ήχου τη 
+φορά. Παρουσιάστηκε
+πρόβλημα όμως όταν θέλαμε να μετατρέψουμε το byte buffer που επιστρέφει
+η συνάρτηση readframes σε numpy array. Συγκεκριμένα, έπρεπε να γνωρίζουμε
+πόσα bit υπήρχαν σε κάθε sample, και δεν γνωρίζαμε αν έπρεπε να
+λάβουμε υπόψιν το endianness των bytes και το αν ήταν signed ή unsigned
+ακέραιοι. Για αυτό χρειάστηκε να κατασκευάσουμε τη συνάρτηση 
+\emph{scipy\_read\_data}, η οποία έχει υλοποίηση με το module scipy. Η 
+συνάρτηση io.wavfile.read οποία επιστρέφει απευθείας ένα
+έτοιμο numpy array με τα samples ολόκληρου του αρχείου, λύνοντας τα 
+προβλήματά μας. Κρατάμε και τις δύο συναρτήσεις για ιστορικούς λόγους, 
+θεωρητικά δουλεύει και η read\_data για $8$-bits- και $16$-bits-per-sample
+wav αρχεία, αλλά δοκιμάστηκε μόνο για να διαβάζει τα πρώτα $160$ samples
+ενός wav αρχείου, όχι ολόκληρα αρχεία.
+
+(να πω και για main.py εδώ; Καλό σημείο θα ήταν)
+
+(audio wrapper write function)
+
+\subsection{Κωδικοποιητής}
+\subsection{Αποκωδικοποιητής}
+
+\end{document}
