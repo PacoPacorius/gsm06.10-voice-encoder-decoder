@@ -295,3 +295,24 @@ poly me ta LAR, paromoia kai oi apokwdikopoihmenes ekdoxes twn LAR,
 reflection coeff kai ak moiazoun poly me ta arxika... Nomizw to vrhkame!
 I also renamed s0 arrays to be specification compliant both in 
 preprocessing and the encoder.
+.pp
+Iterating over the whole file seems to work like a charm! Encoder works
+on different audio wav files too. We omit some bits at the end of each 
+wav file if number of samples is not divisible by 160. It's no big deal
+if we lose some bits from the end of the file, right? 160 / 8000  = 20ms,
+that's not too bad, but it definitely will be audible. 
+.sh 2 "1o paradoteo coming to a close"
+.pp
+The 1st assignment is basically finished from my part. I need to wait
+on Giwrgos to finish up his decoder and compare the output with the 
+input signal. That will be the final test. I could try implementing
+Log Area Ratios Interpolation, it shouldn't be too hard. Then I should
+probably get started on the report before we get too deep into 
+assignment 2, as Giwrgos doesn't know any LaTeX at all... For now I'll 
+take a break, eat lunch, have a noon siesta, and chill out mexri 
+to ergasthrio hlektronikhs 3 gia thn ergasia telestikou enisxyth.
+.pp
+I tried later in the day to implement interpolation, but I didn't quite 
+get where this interpolation should happen, since we are only seeing the
+160 samples at the beginning of the encoder, not ever again. Maybe this
+is a decoder thing?

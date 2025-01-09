@@ -87,7 +87,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
         LARd[i] = (LARc[i] - B(i)) / A(i)
     print('LARd = ', LARd, ' size of LARd = ', LARd.size)
 
-    # not implementing interpolation (yet!)
+    # not implementing interpolation
 
     # LARd to reflection coefficients krd
     krd = numpy.zeros(8)
@@ -103,21 +103,11 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('krd = ', krd, ' size of krd = ', krd.size)
 
     # get decoded akd from krd
-
     akd = numpy.zeros(8)
     akd, e_final = hw_utils.reflection_coeff_to_polynomial_coeff(krd)
     print('akd = ', akd, ' size of akd = ', len(akd))
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
-    # FIR filter coefficients initialize
-    #fir_filter_num_coefficient = numpy.zeros(9)
-    #for i in range (0,9):
-        #if i == 0:
-            #fir_filter_num_coefficient[i] = 1
-        #else:
-            #fir_filter_num_coefficient[i] = -a[i-1]
-
-    #print('fir_filter_num_coefficient = ', fir_filter_num_coefficient, ' size of fir_filter_num_coefficient = ', fir_filter_num_coefficient.size)
     
     # apply FIR filter and calculate residual
     curr_frame_st_residual = scipy.signal.convolve(s, akd, 'same')
@@ -126,7 +116,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
 
 
 
-    return LARc, curr_frame_st_residual
+    return LARd, curr_frame_st_residual
 
 ###################################
 ######## HELPER FUNCTIONS #########
