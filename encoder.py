@@ -71,7 +71,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
         elif abs_kr >= 0.675 and abs_kr < 0.950:
             LAR[i] = numpy.sign(kr[i]) * (2*abs_kr - 0.675)
         elif abs_kr >= 0.950 and abs_kr <= 1:
-            LAR[i] = numpy.sign(kr[i]) (8*abs_kr - 6.375)
+            LAR[i] = numpy.sign(kr[i]) * (8*abs_kr - 6.375)
 
     print('LAR = ', LAR, ' size of LAR = ', LAR.size)
 
