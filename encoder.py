@@ -2,14 +2,14 @@ import numpy
 import hw_utils
 import scipy.signal
 
-def RPE_frame_st_coder(s0: numpy.ndarray):
+def RPE_frame_st_coder(s: numpy.ndarray):
     # calculate autocorrelations
     rs = numpy.zeros((9,),numpy.float64)
     for k in range (0,9):
         for i in range (k, 160):
             # estimate autocorrelation in accordance to section 3.1.4
-            rs[k] += s0[i]*s0[i-k]
-            #print('\ns(i) = ', s0[i], 's(i-k) = ', s0[i-k])
+            rs[k] += s[i]*s[i-k]
+            #print('\ns(i) = ', s[i], 's(i-k) = ', s[i-k])
     print('\n\nrs = ', rs, ' shape of rs = ', rs.shape)
 
     # Create w, R and r, matrices of the normal equations
@@ -48,11 +48,17 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
         a[i] = w[i]
     print('a after solving = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
+    # prepare polynomial_coeff_to_reflection_coeff's input array
+    a_mod = numpy.zeros(9)
+    for i in range(0,9):
+        if i == 0:
+            a_mod[i] = 1
+        else:
+            a_mod[i] = -a[i-1]
+
+    print('Input array to polynomial_coeff_to_reflection_coeff: ', a_mod)
     # calculate reflection coefficients
-    kr = hw_utils.polynomial_coeff_to_reflection_coeff(a)
-    # append a 0 to kr so that it is of size 8, when you figure out what goes wrong, 
-    # remove this line
-    kr = numpy.append(kr, 0)
+    kr = hw_utils.polynomial_coeff_to_reflection_coeff(a_mod)
     print('kr after solving = ', kr, ' size of kr = ', kr.size)
     
     # convert reflection coefficients to Log-Area-Ratios
@@ -100,7 +106,6 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
 
     akd = numpy.zeros(8)
     akd, e_final = hw_utils.reflection_coeff_to_polynomial_coeff(krd)
-    print('e_final = ', e_final)
     print('akd = ', akd, ' size of akd = ', len(akd))
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
@@ -115,7 +120,7 @@ def RPE_frame_st_coder(s0: numpy.ndarray):
     #print('fir_filter_num_coefficient = ', fir_filter_num_coefficient, ' size of fir_filter_num_coefficient = ', fir_filter_num_coefficient.size)
     
     # apply FIR filter and calculate residual
-    curr_frame_st_residual = scipy.signal.convolve(s0, akd, 'same')
+    curr_frame_st_residual = scipy.signal.convolve(s, akd, 'same')
     print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
 

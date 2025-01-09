@@ -1,14 +1,15 @@
 import numpy
 
 def offset_compensation(s0: numpy.ndarray):
-    s0 = s0.astype(numpy.float64)
+    sof = numpy.zeros(len(s0.astype(numpy.float64)))
     alpha = 32735*2**(-15)
     for k in range (1, len(s0)):
-        s0[k] = s0[k] - s0[k-1] + alpha*s0[k-1]
-    return s0
+        sof[k] = s0[k] - s0[k-1] + alpha*s0[k-1]
+    return sof
 
-def pre_emphasis(s0: numpy.ndarray):
+def pre_emphasis(sof: numpy.ndarray):
+    s = numpy.zeros(len(sof.astype(numpy.float64)))
     beta = 28180*2**(-15)
-    for k in range (1, len(s0)):
-        s0[k] = s0[k] - beta*s0[k-1]
-    return s0
+    for k in range (1, len(s)):
+        s[k] = sof[k] - beta*sof[k-1]
+    return s
