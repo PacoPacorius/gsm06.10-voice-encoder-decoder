@@ -14,8 +14,8 @@ for j in range(0,iterations):
     # resize audio_data array
     s0 = numpy.zeros(160)
     offset = j * 160
-    for i in range (offset, (j+1)*160):
-        s0[i - j*160] = audio_data[i]
+    for i in range (offset, offset + 160):
+        s0[i - offset] = audio_data[i]
 
     # offset compensation and pre-emphasis
     sof = preprocessing.offset_compensation(s0)
