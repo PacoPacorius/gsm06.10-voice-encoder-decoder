@@ -11,7 +11,7 @@ import preprocessing
 audio_data = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
 iterations = len(audio_data) // 160     # // for integer division
 for j in range(0,iterations):
-    # resize audio_data array
+    # initialize s0
     s0 = numpy.zeros(160)
     offset = j * 160
     for i in range (offset, offset + 160):
