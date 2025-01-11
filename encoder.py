@@ -76,14 +76,14 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('LAR = ', LAR, ' size of LAR = ', LAR.size)
 
     # quantize and encode LAR to LARc
-    for i in range(0,7):
+    for i in range(0,8):
         LARc[i] = Nint(A(i)*LAR[i] + B(i))
 
     print('LARc = ', LARc, ' size of LARc = ', LARc.size)
 
     LARd = numpy.zeros(8)
     # decode LARc to LARd
-    for i in range(0,7):
+    for i in range(0,8):
         LARd[i] = (LARc[i] - B(i)) / A(i)
     print('LARd = ', LARd, ' size of LARd = ', LARd.size)
 
@@ -103,7 +103,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('krd = ', krd, ' size of krd = ', krd.size)
 
     # get decoded akd from krd
-    akd = numpy.zeros(8)
+    akd = numpy.zeros(9)
     akd, e_final = hw_utils.reflection_coeff_to_polynomial_coeff(krd)
     print('akd = ', akd, ' size of akd = ', len(akd))
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
@@ -114,9 +114,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
 
-
-
-    return LARd, curr_frame_st_residual
+    return LARc, curr_frame_st_residual
 
 ###################################
 ######## HELPER FUNCTIONS #########

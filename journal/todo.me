@@ -324,3 +324,38 @@ eksetastikhs mou einai poly fortwmeno, amfivallw...
 .pp
 Re-started the report because I didn't like how it was goind at all. 
 Now it has a much better structure I think!
+.sh 1 "First full circle! -- 11/1/2025"
+.pp
+We officially have our first reconstructed wav file! This is big news!
+Unfortunately, it sounds like shit. Not total noise, but I think all we
+introduced with our work was just noise. I did notice that if we skip
+preprocessing, the audio file actually sounds clearer between the 
+voice sounds. Are we introducing noise both in the preprocessing and 
+the short term analysis part? More importantly, are we making mistakes
+in both st analysis and preprocessing, or is some of this natural?
+.pp
+Tha kanoume klhsh mallon me ton Giwrgo shmera na doume ti mellei 
+genesthai... Mallon giati paizei na mhn mporei giati allakse h wra sthn
+prova Angus to vrady... Axxx... Kataramenh mpanta... 
+Elpizw na vroume to provlhma ston kwdika syntoma. 
+.sh 2 "Trying different stuff"
+.pp
+I am trying to isolate the problem and optimize the code. Moved the
+preprocessign section out of the main loop, now it happens only once
+and is applied to the whole array of audio data, not just 160 samples
+at a time. It sounds exactly the same, so at least we know our logic 
+and loops are working correctly. I put some parentheses at the 
+preprocessing calculations to enforce the operation priority I wanted
+explicitly, this actually did make the reconstructed wav file as clear
+as the one that didn't use preprocessing at all! Damn implicitness!
+It did bite us in the ass this time. Some ranges were wrong when 
+calculating the decoded LARds.
+.pp
+I found it! The biggest problem was due to miscommunication. I had 
+understood that I should return the decoded LARds while Giwrgos had
+understood that the output of the encoder were the encoded LARcs.
+So we ended up decoding the Log Area Ratios twice which just made 
+no sense and introduced all the noise. Now the reconstructed audio
+is quite clear! I think this is actually the 1st level done! I should
+quickly get back to finishing the report. Maybe we should attempt 
+level 2 as well?

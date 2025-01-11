@@ -10,24 +10,26 @@ import decoder
 
 
 # read data from wav file 
-sample_rate,audio_data = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
-iterations = len(audio_data) // 160     # // for integer division
+sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
+iterations = len(audio_data_o) // 160     # // for integer division
 
 all_frames = []
 audio_array = numpy.array([], dtype=numpy.int16)
 
+audio_data_of = preprocessing.offset_compensation(audio_data_o)
+audio_data = preprocessing.pre_emphasis(audio_data_of)
+#iterations = 1
 for j in range(0,iterations):
     # initialize s0
-    s0 = numpy.zeros(160)
+    s = numpy.zeros(160)
     offset = j * 160
     for i in range (offset, offset + 160):
-        s0[i - offset] = audio_data[i]
+        s[i - offset] = audio_data[i]
 
     # offset compensation and pre-emphasis
-    sof = preprocessing.offset_compensation(s0)
-    s = preprocessing.pre_emphasis(sof)
     #print('s0 = ', s0, ' s0 length: ', len(s0))
     #print('sof = ', sof, ' sof length: ', len(sof))
+    #s = s0
     #print('s = ', s, ' s length: ', len(s))
 
     #print('main after pre-processing s0 = ', s0, ' s0 length: ', len(s0))
@@ -37,7 +39,7 @@ for j in range(0,iterations):
     #decoder
 
     S0=decoder.RPE_frame_st_decoder(LARd,curr_frame_st_residual)
-    #print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
+    print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
 
     all_frames.append(S0)
     s = numpy.ravel(S0)
@@ -46,4 +48,5 @@ audio_array = audio_array.astype(numpy.int16)
 output_filename = 'reconstructed_audio.wav'
 scipy.io.wavfile.write(output_filename, sample_rate, audio_array)
 
-print(audio_array,audio_data)
+print('audio array = ', audio_array)
+print('audio data = ', audio_data)
