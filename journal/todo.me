@@ -359,3 +359,12 @@ no sense and introduced all the noise. Now the reconstructed audio
 is quite clear! I think this is actually the 1st level done! I should
 quickly get back to finishing the report. Maybe we should attempt 
 level 2 as well?
+.pp
+We have another problem! Our program doesn't handle wav files that
+aren't 16-bit and have their peak amplitude below -25dB... Also 
+I have moved the preprocessing outside of the main loop and it processes
+a wav file all at once, problem is, if the wav file is big enough,
+a cryptic integer overflow warning is thrown, even though the number
+of samples isn't big enough to overflow an int32 and neither are the 
+calculations. If I move it inside the loop like I did it before, I get
+singular matrix errors on some files! Tough times!

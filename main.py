@@ -10,7 +10,7 @@ import decoder
 
 
 # read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
+sample_rate,audio_data_o = audio_wrapper.scipy_read_data("omorfes_kalhsperes16.wav")
 iterations = len(audio_data_o) // 160     # // for integer division
 
 all_frames = []
@@ -44,7 +44,10 @@ for j in range(0,iterations):
     all_frames.append(S0)
     s = numpy.ravel(S0)
     audio_array = numpy.concatenate((audio_array, s))
-audio_array = audio_array.astype(numpy.int16)
+print('type of audio_array element = ', type(audio_array[0]))
+audio_array = audio_array.astype(numpy.int16)       # our wav files won't always have 16-bit samples!!!
+#audio_array = audio_array.astype(numpy.uint8)       # our wav files won't always have 16-bit samples!!!
+#audio_array = audio_array.astype(numpy.int32)       # our wav files won't always have 16-bit samples!!!
 output_filename = 'reconstructed_audio.wav'
 scipy.io.wavfile.write(output_filename, sample_rate, audio_array)
 
