@@ -9,7 +9,8 @@ import scipy
 def scipy_read_data(file_wav_audio):
     sample_rate, audio_data = scipy.io.wavfile.read(file_wav_audio)
     #print("***\nScipy method\n***\nSample rate = ", sample_rate, "\naudio_data = ", audio_data, ", length = ", len(audio_data))
-    return audio_data
+    return sample_rate,audio_data
+
 
 
 
