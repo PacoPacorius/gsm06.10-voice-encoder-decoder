@@ -10,7 +10,7 @@ import decoder
 
 
 # read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("omorfes_kalhsperes16.wav")
+sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
 iterations = len(audio_data_o) // 160     # // for integer division
 
 all_frames = []
