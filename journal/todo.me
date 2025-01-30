@@ -322,7 +322,7 @@ to complete the 2nd assignment before the deadline? To programma ths
 eksetastikhs mou einai poly fortwmeno, amfivallw...
 .sh 1 "Report re-start -- 10/1/2025"
 .pp
-Re-started the report because I didn't like how it was goind at all. 
+Re-started the report because I didn't like how it was going at all. 
 Now it has a much better structure I think!
 .sh 1 "First full circle! -- 11/1/2025"
 .pp
@@ -368,3 +368,50 @@ a cryptic integer overflow warning is thrown, even though the number
 of samples isn't big enough to overflow an int32 and neither are the 
 calculations. If I move it inside the loop like I did it before, I get
 singular matrix errors on some files! Tough times!
+.sh 1 "Coming back for more -- 28/1/2025"
+.pp 
+I am not sure why I didn't bother to write after the discord call
+we had with Giwrgos. Maybe it went so well that I completely
+forgot about this journal. Dimitris Aletras says we don't need 
+to to worry too muxh about input files so that's our input
+file problem done... Giwrgos made some further tweaks to the code 
+and it seems to be working quite fine now, maybe even better than 
+right after our call. Overflow problem?? Not sure if it's worth
+addressing considering the code is running correctly.
+.pp
+Τι θα γίνει αν γράψω ελληνικά; Ξέχασα. Ανυπομονώ για το 2ο 
+επίπεδο αυτής της εργασίας. Ελπίζω να προλάβουμε και αυτό και
+την αναφορά, γιατί ο χρόνος πιέζει... Πρότεινα κλήση
+στον Γιώργο για αύριο βράδυ να συζητήσουμε ποιό θα είναι το
+πλάνο μας. Σήμερα δίνω αξιοπιστιά και τη βαριέμαι τόσο που
+αντί για αυτή κάνω αυτό και κοιτάζω το επόμενο μέρος της εκφώνησης 
+Πολυμέσα. Νταξ τα ελληνικά φαίνονται λίγο χάλια αλλά θα μπορούσαν 
+να είναι χειρότερα.
+.sh 2 "Υπολειτουργία α) εκφώνηση"
+.pp
+Τι πρέπει να κάνω εδώ; Έχω 4 subframes και ψάχνω περιοδικότητα 
+μεταξύ του ίδιου frame. Δηλαδή για το 1ο subframe δεν ψάχνω καν
+περιοδικότητα. Άρα πρέπει να υπολογίσω για κάθε subframe από
+τα 2ο, 3ο και 4ο την αυτοσυσχέτιση με 40 <= λ <= 120. Το
+λ για το οποίο η αυτοσυσχέτιση είναι μέγιστη, το ονομάζω Ν
+και από αυτό υπολογίζω το b. Τέλος τα κβαντίζω με βάση τις ενότητες
+3.1.14 και 3.1.15.  Αυτό ακούγεται αρκετά απλό μέχρι τώρα.
+Καλό θα ήταν να ρίξω και μια ματιά στο πρότυπο.
+.sh 2 "Υπολειτουργια β) εκφώνηση"
+.pp
+Φαίνεται αρκετά self-explanatory, το πρώτο d' όμως
+φαντάζομαι θα θέσω το d έτσι; Αλλιώς πώς θα χρησιμοποιήσω
+d που έχει συντεθεί ενώ θέλω να συνθέσω το πρώτο; Η 
+υπολειτουργία γ) δεν υλοποιείται.
+.sh 2 "Υπολειτουργια δ) εκφωνηση"
+.pp
+Αυτό φαίνεται λίγο πιο περίπλοκο και φαίνεται να βασίζεται στην
+υπολειτουργία γ). Αλλά νομίζω ότι αυτό που θέλουν να μας πουν
+είναι ότι η διέγερση του φίλτρου μας θα είναι η e(n), η μη
+αποκβαντισμένη, αλλά η ορίτζιναλ αναλογική;
+.pp
+Τι γίνεται με τρία πρώτα subframes; Έχουμε δύο επιλογές, ή
+παίρνουμε πρόβλεψη από προηγούμενο frame, ή παίρνουμε πρόβλεψη
+από το ίδιο frame, απλά έχουμε μικρότερο pool πρόβλεψης. Για
+το πρώτο subframe δεν κάνουμε πρόβλεψη καθόλου με αυτό τον 
+τρόπο...
