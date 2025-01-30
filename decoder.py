@@ -4,6 +4,7 @@ import numpy as np
 import hw_utils as ut
 from scipy.signal import lfilter
 import scipy
+from scipy.signal import dimpulse
 
 def RPE_frame_st_decoder(LARc: np.ndarray,curr_frame_st_resd: np.ndarray
  )-> np.ndarray:
@@ -30,24 +31,32 @@ def RPE_frame_st_decoder(LARc: np.ndarray,curr_frame_st_resd: np.ndarray
  #code for converting r to ak
 
  kr=r
- a,e_final=ut.reflection_coeff_to_polynomial_coeff(kr)
+ print('kr',kr)
+ a_k, e_final =ut.reflection_coeff_to_polynomial_coeff(kr)
 
  #constructing the decoding filter H using the ak values
- H=np.zeros(9)
- epsilon = 1e-12
+ H=np.empty(9)
+ c=1e-32
 
- for z in range(len(H)):
-  H[z]=1/(1-sum(a[k]*(z + epsilon)**(-k) for k in range(len(a))))
+ a_k=a_k[1:]
+ for z in range(1,len(H)):
+  H[z]=1/(1-sum(a_k[k]*((z+c)**(-k-1)) for k in range(len(a_k))))
+ H[0]=1
+
+
+
+
 
 
  #by applying the H filter to curr_frame_st_resd ,aka "d" , we get s after preprocessing
 
- S = scipy.signal.convolve(curr_frame_st_resd,H,mode='same')
+ S =np.convolve(curr_frame_st_resd,H,mode='same')
 
-
+ #Sof=np.empty(len(S.astype(np.float64)))
+ #S0= np.empty(len(S.astype(np.float64)))
  #reverting preprocessing
- beta=28180*2**(-15)
- alpha = 32735*2**(-15)
+ beta=28180*(2**(-15))
+ alpha =32735*(2**(-15))
 
  #coding equations ,for reference
 
@@ -62,19 +71,20 @@ def RPE_frame_st_decoder(LARc: np.ndarray,curr_frame_st_resd: np.ndarray
  #turning the decoding equations to filters
  #might change that
 
- b = [1] #filter coefficients
- a = [1, -beta]
+
+ b1 = [1] #filter coefficients
+ a1 = [1, -beta]
 
  #applying lfilter to S
 
- Sof = lfilter(b, a, S)
+ Sof = lfilter(b1, a1, S)
 
  #creating filter to apply to Sof
 
- b = [1, -alpha]
- a = [1, -1]
+ b2 = [1, -alpha]
+ a2 = [1, -1]
 
- S0= lfilter(b, a, Sof)
+ S0= lfilter(b2, a2, Sof)
 
 
 
