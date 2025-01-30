@@ -2,7 +2,15 @@ import numpy
 import hw_utils
 import scipy.signal
 
-def RPE_frame_st_coder(s: numpy.ndarray):
+
+
+def RPE_frame_slt_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray, 
+                        prev_frame_lt_resd: numpy.ndarray):
+
+    #############################
+    ######## 1ο Επίπεδο #########
+    #############################
+
     # calculate autocorrelations
     rs = numpy.zeros((9,),numpy.float64)
     for k in range (0,9):
@@ -115,7 +123,124 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
 
+    #return LARc, curr_frame_st_residual
+
+
+
+
+    #############################
+    ######## 2ο Επίπεδο #########
+    #############################
+    
+    print()
+    print()
+    print("================")
+    print("== 2o epipedo ==")
+    print("================")
+    print()
+    print()
+
+    j = 0
+    d_prev = prev_frame_st_residual 
+    d_current = curr_frame_st_residual
+    d_reconstruct = numpy.zeros(160)
+    d_total = numpy.array([])
+    N = 0
+
+    ## Estimation ## 
+
+    # find N=λ maximizer of auto-correlation Rj(λ)
+    R = 0
+    max_R = 0
+    maximizer_lamda = 40
+    
+    d_current[range(0,160)]
+    for j in range(0,4):
+        # include subframes of previous frame in our search
+        d_total = numpy.concatenate((d_prev[range(40, 160)], d_reconstruct[range(0, 40*j)]))
+        d_total = numpy.concat((d_total, d_current[range(40*j, 40*(j + 1))]))
+        print("iteration j = ", j)
+        print("length of d_total = ", len(d_total))
+        for lamda in range(40,121):
+            for i in range(0,40):
+                R = R + d_current[40*j + i] * d_total[120 + 40*j + i - lamda]
+            #print("lamda = ", lamda, ", R = ", R)
+
+            # keep max R and maximizing λ
+            if R > max_R:
+                max_R = R
+                maximizer_lamda = lamda
+
+        N = maximizer_lamda
+        print("N = ", N)
+        print("max R = ", max_R)
+
+        # calculate b
+        b_numerator = 0
+        b_denominator = 0
+
+        for i in range(0,40):
+            b_numerator = b_numerator + d_current[40*j + i] * d_total[120 + 40*j + i - N]
+            b_denominator = b_denominator + d_total[120 + 40*j + i - N] * d_total[120 + 40*j + i - N]
+
+        print("b_numerator = ", b_numerator)
+        print("b_denominator = ", b_denominator)
+        b = b_numerator / b_denominator
+
+        # N is already an int, it's already quantized
+        # quantize b
+        print("b = ", b)
+        bc = 0
+        if b <= 0.2:
+            bc = 0
+        elif b > 0.2 and b <= 0.5:
+            bc = 1
+        elif b > 0.5 and b <= 0.8:
+            bc = 2
+        elif b > 0.8:
+            bc = 3
+        else: 
+            bc = 0
+        print("bc = ", bc, "type of bc = ", type(bc), ", numbcer of bcits = ", N.bit_count())
+
+        
+        ## Prediction ##
+
+        # N is just an int, no need to decode
+        # decode b
+        bd = 0
+        if bc == 0:
+            bd = 0.1
+        elif bc == 1:
+            bd = 0.35
+        elif bc == 2:
+            bd = 0.65
+        elif bc == 3:
+            bd = 1
+        else:
+            bd = 0.1
+
+        e = numpy.zeros(160)
+        d_predict = numpy.zeros(160)
+        for i in range(0, 40):
+            # calculate prediction
+            d_predict[j*40 + i] = bd * d_total[120 + j*40 + i - N]
+
+            # calculate residual
+            e[j*40 + i] = d_current[j*40 + i] - d_predict[j*40 + i]
+
+        print("d_predict = ", d_predict)
+        print("e = ", e)
+
+
+
     return LARc, curr_frame_st_residual
+
+
+
+
+
+
 
 ###################################
 ######## HELPER FUNCTIONS #########
