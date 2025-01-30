@@ -54,7 +54,7 @@ def RPE_frame_st_coder(s: numpy.ndarray):
         if i == 0:
             a_mod[i] = 1
         else:
-            a_mod[i] = -a[i-1]
+            a_mod[i] =-a[i-1]
 
     print('Input array to polynomial_coeff_to_reflection_coeff: ', a_mod)
     # calculate reflection coefficients
@@ -63,21 +63,21 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     
     # convert reflection coefficients to Log-Area-Ratios
     LAR = numpy.zeros(8)
+    LARc = numpy.zeros(8)
     for i in range(0,8):
         abs_kr = numpy.absolute(kr[i])
         if abs_kr < 0.675:
             LAR[i] = kr[i]
-        elif abs_kr >= 0.675 and abs_kr < 0.950:
-            LAR[i] = numpy.sign(kr[i]) * (2*abs_kr - 0.675)
-        elif abs_kr >= 0.950 and abs_kr <= 1:
-            LAR[i] = numpy.sign(kr[i]) * (8*abs_kr - 6.375)
+        elif (abs_kr >= 0.675) and (abs_kr < 0.950):
+            LAR[i] = (numpy.sign(kr[i])) * ((2*abs_kr) - 0.675)
+        elif (abs_kr >= 0.950) and (abs_kr <= 1):
+            LAR[i] = (numpy.sign(kr[i])) * ((8*abs_kr) - 6.375)
 
     print('LAR = ', LAR, ' size of LAR = ', LAR.size)
 
     # quantize and encode LAR to LARc
-    LARc = numpy.zeros(8)
     for i in range(0,8):
-        LARc[i] = Nint(A(i)*LAR[i] + B(i))
+        LARc[i] = Nint((A(i)*LAR[i]) + B(i))
 
     print('LARc = ', LARc, ' size of LARc = ', LARc.size)
 
@@ -95,23 +95,24 @@ def RPE_frame_st_coder(s: numpy.ndarray):
         abs_LARd = numpy.absolute(LARd[i])
         if abs_LARd < 0.675:
             krd[i] = LARd[i]
-        elif abs_LARd >= 0.675 and abs_LARd < 1.225:
-            krd[i] = numpy.sign(LARd[i]) * ( 0.5 * abs_LARd + 0.3375 )
-        elif abs_LARd >= 1.225 and abs_LARd <= 1.625:
-            krd[i] = numpy.sign(LARd[i]) * ( 0.125 * abs_LARd + 0.796875 )
+        elif (abs_LARd >= 0.675) and (abs_LARd < 1.225):
+            krd[i] = numpy.sign(LARd[i]) * ( (0.500 * abs(LARd[i])) + 0.337500 )
+        elif (abs_LARd >= 1.225) and (abs_LARd <= 1.625):
+            krd[i] = numpy.sign(LARd[i]) * ( (0.125 * abs(LARd[i])) + 0.796875 )
 
     print('krd = ', krd, ' size of krd = ', krd.size)
 
     # get decoded akd from krd
     akd = numpy.zeros(9)
     akd, e_final = hw_utils.reflection_coeff_to_polynomial_coeff(krd)
-    print('akd = ', akd, ' size of akd = ', len(akd))
+
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
 
-    
+
+    print('akd = ', akd, ' size of akd = ', len(akd))
     # apply FIR filter and calculate residual
-    curr_frame_st_residual = scipy.signal.convolve(s, akd, 'same')
+    curr_frame_st_residual =numpy.convolve(s, akd, 'same')
     print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
 
@@ -123,16 +124,16 @@ def RPE_frame_st_coder(s: numpy.ndarray):
 
 # round to closest integer value
 def Nint(z):
-    return int(z + numpy.sign(z)*0.5)
+    return int(z + (numpy.sign(z)*0.5))
 
 # define LAR quantization and coding coefficients
 def A(i):
     if i == 1 or i == 2 or i == 3 or i == 0:
-        return 20.
+        return 20.000
     elif i == 4:
         return 13.637
     elif i == 5:
-        return 15.
+        return 15.000
     elif i == 6:
         return 8.334
     elif i == 7:
@@ -142,15 +143,15 @@ def A(i):
 
 def B(i):
     if i == 1 or i == 0:
-        return 0.
+        return 0.000
     elif i == 2: 
-        return 4.
+        return 4.000
     elif i == 3:
-        return -5.
+        return -5.000
     elif i == 4:
         return 0.184
     elif i == 5:
-        return -3.5
+        return -3.500
     elif i == 6:
         return -0.666
     elif i == 7:
