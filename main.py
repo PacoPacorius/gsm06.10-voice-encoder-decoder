@@ -31,7 +31,7 @@ for j in range(0,iterations):
         s[i - offset] = audio_data[i]
 
     # encoder
-    LARc,curr_frame_st_residual=encoder.RPE_frame_st_coder(s, prev_frame_st_residual)
+    LARc,curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, prev_frame_st_residual)
 
     # decoder
     S0=decoder.RPE_frame_st_decoder(LARc,curr_frame_st_residual)
@@ -42,7 +42,6 @@ for j in range(0,iterations):
 
 audio_array = numpy.asarray(all_frames)
 audio_array = numpy.ravel(audio_array)
-#print('type of audio_array element = ', type(audio_array[0]))
 audio_array = audio_array.astype(numpy.int16)       # our wav files will always have 16-bit samples
 
 output_filename = 'reconstructed_audio.wav'

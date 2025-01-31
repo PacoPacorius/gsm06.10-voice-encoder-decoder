@@ -134,87 +134,55 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     d_prev = prev_frame_st_residual 
     d_current = curr_frame_st_residual
     d_reconstruct = numpy.zeros(160)
+    N = [0] * 4
+    b = [0] * 4
     d_total = numpy.array([])
-    N = 0
+    bc = [0] * 4
+    bd = [0] * 4
 
     ## Estimation ## 
-
-    # find N=λ maximizer of auto-correlation Rj(λ)
-    R = 0
-    max_R = 0
-    maximizer_lamda = 40
     
-    d_current[range(0,160)]
     for j in range(0,4):
-        # include subframes of previous frame in our search
-        d_total = numpy.concatenate((d_prev[range(40, 160)], d_reconstruct[range(0, 40*j)]))
-        d_total = numpy.concatenate((d_total, d_current[range(40*j, 40*(j + 1))]))
-        print("iteration j = ", j)
-        print("length of d_total = ", len(d_total))
-        for lamda in range(40,121):
-            for i in range(0,40):
-                R = R + d_current[40*j + i] * d_total[120 + 40*j + i - lamda]
-            #print("lamda = ", lamda, ", R = ", R)
-
-            # keep max R and maximizing λ
-            if R > max_R:
-                max_R = R
-                maximizer_lamda = lamda
-
-        N = maximizer_lamda
-        print("N = ", N)
-        print("max R = ", max_R)
-
-        # calculate b
-        b_numerator = 0
-        b_denominator = 0
-
-        for i in range(0,40):
-            b_numerator = b_numerator + d_current[40*j + i] * d_total[120 + 40*j + i - N]
-            b_denominator = b_denominator + d_total[120 + 40*j + i - N] * d_total[120 + 40*j + i - N]
-
-        print("b_numerator = ", b_numerator)
-        print("b_denominator = ", b_denominator)
-        b = b_numerator / b_denominator
+        N[j], b[j], d_total = RPE_subframe_slt_lte(d_current, d_reconstruct, j, d_prev)
 
         # N is already an int, it's already quantized
+
         # quantize b
-        print("b = ", b)
-        bc = 0
-        if b <= 0.2:
-            bc = 0
-        elif b > 0.2 and b <= 0.5:
-            bc = 1
-        elif b > 0.5 and b <= 0.8:
-            bc = 2
-        elif b > 0.8:
-            bc = 3
+        print("b = ", b[j])
+        if b[j] <= 0.2:
+            bc[j] = 0
+        elif b[j] > 0.2 and b[j] <= 0.5:
+            bc[j] = 1
+        elif b[j] > 0.5 and b[j] <= 0.8:
+            bc[j] = 2
+        elif b[j] > 0.8:
+            bc[j] = 3
         else: 
-            bc = 0
-        print("bc = ", bc, "type of bc = ", type(bc), ", numbcer of bcits = ", N.bit_count())
+            bc[j] = 0
+        print("bc = ", bc, "type of bc = ", type(bc[j]), ", number of bc bits = ", bc[j].bit_count())
 
         
         ## Prediction ##
 
         # N is just an int, no need to decode
         # decode b
-        bd = 0
-        if bc == 0:
-            bd = 0.1
-        elif bc == 1:
-            bd = 0.35
-        elif bc == 2:
-            bd = 0.65
-        elif bc == 3:
-            bd = 1
+        if bc[j] == 0:
+            bd[j] = 0.1
+        elif bc[j] == 1:
+            bd[j] = 0.35
+        elif bc[j] == 2:
+            bd[j] = 0.65
+        elif bc[j] == 3:
+            bd[j] = 1
         else:
-            bd = 0.1
+            bd[j] = 0.1
 
+        print("bd = ", bd, "type of bd = ", type(bd[j]))
         e = numpy.zeros(160)
         d_predict = numpy.zeros(160)
         for i in range(0, 40):
             # calculate prediction
-            d_predict[j*40 + i] = bd * d_total[120 + j*40 + i - N]
+            d_predict[j*40 + i] = bd[j] * d_total[120 + j*40 + i - N[j]]
 
             # calculate residual
             e[j*40 + i] = d_current[j*40 + i] - d_predict[j*40 + i]
@@ -224,18 +192,68 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
             # is the index for d_reconstruct here correct? 
             d_reconstruct[j*40 + i] = e[j*40 + i] + d_predict[j*40 + i]
 
-        print("d_predict = ", d_predict)
-        print("e = ", e)
-        print("d_reconstruct = ", d_reconstruct)
+        print("d_predict = ", d_predict, ", size of d_predict = ", len(d_predict))
+        print("e = ", e, ", size of e = ", len(e))
+        print("d_reconstruct = ", d_reconstruct, ", size of d_reconstruct = ", len(d_reconstruct))
+
+
+
+    return LARc, curr_frame_st_residual, N, bc, e
 
 
 
 
-    return LARc, curr_frame_st_residual
+
+def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray, j: int, prev_frame_d: numpy.ndarray):
+
+    # I do not like some of these names, rename
+    d_current = d
+    d_reconstruct = prev_d
+    d_prev = prev_frame_d
+    d_total = numpy.array([])
+
+    # find N=λ maximizer of auto-correlation Rj(λ)
+    R = 0
+    max_R = 0
+    maximizer_lamda = 40
+
+    # include subframes of previous frame in our search
+    d_total = numpy.concatenate((d_prev[range(40, 160)], d_reconstruct[range(0, 40*j)]))
+    d_total = numpy.concatenate((d_total, d_current[range(40*j, 40*(j + 1))]))
+    print("iteration j = ", j)
+    print("length of d_total = ", len(d_total))
+    for lamda in range(40,121):
+        for i in range(0,40):
+            R = R + d_current[40*j + i] * d_total[120 + 40*j + i - lamda]
+        #print("lamda = ", lamda, ", R = ", R)
+
+        # keep max R and maximizing λ
+        if R > max_R:
+            max_R = R
+            maximizer_lamda = lamda
+
+    N = maximizer_lamda
+    print("N = ", N)
+    print("max R = ", max_R)
+
+    # calculate b
+    b_numerator = 0
+    b_denominator = 0
+
+    for i in range(0,40):
+        b_numerator = b_numerator + d_current[40*j + i] * d_total[120 + 40*j + i - N]
+        b_denominator = b_denominator + d_total[120 + 40*j + i - N] * d_total[120 + 40*j + i - N]
+
+    print("b_numerator = ", b_numerator)
+    print("b_denominator = ", b_denominator)
+    b = b_numerator / b_denominator
+
+    return N, b, d_total
 
 ###################################
 ######## HELPER FUNCTIONS #########
 ###################################
+
 
 # round to closest integer value
 def Nint(z):
