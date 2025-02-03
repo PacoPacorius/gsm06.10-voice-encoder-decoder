@@ -36,8 +36,8 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     w = numpy.zeros((0,8))
 
 
-    print('r = ', r)
-    print('R = ', R)
+    #print('r = ', r)
+    #print('R = ', R)
     #print('w = ', w)
     # solve normal equation to w
     w = numpy.linalg.solve(R, r)
@@ -124,9 +124,9 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     
     print()
     print()
-    print("================")
-    print("== 2o epipedo ==")
-    print("================")
+    print("========================")
+    print("== 2o epipedo encoder ==")
+    print("========================")
     print()
     print()
 
@@ -136,66 +136,73 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     d_reconstruct = numpy.zeros(160)
     N = [0] * 4
     b = [0] * 4
-    d_total = numpy.array([])
+    d_total = numpy.zeros([])
     bc = [0] * 4
     bd = [0] * 4
 
     ## Estimation ## 
     
+
     for j in range(0,4):
-        N[j], b[j], d_total = RPE_subframe_slt_lte(d_current, d_reconstruct, j, d_prev)
+        ## construct prev_d
+        #
+        # for the 1st subframe, we should have 120 samples from the 
+        # previous frame
+        #
+        # for the 2nd subframe, we should have 80 samples from the
+        # previous frame followed by 40 reconstructed samples from 
+        # the current frame
+        #
+        # for the 3rd subframe, we should have 40 samples from the
+        # previous frame followed by 80 reconstructed samples from
+        # the current frame
+        #
+        # for the 4th subframe, we should have 120 reconstructed
+        # samples from the current frame
+        prev_d = numpy.concatenate((prev_frame_st_residual[range((j+1) * 40, 160)], d_reconstruct[range(0, j*40)]))
+        d = curr_frame_st_residual[range(j*40, (j+1)*40)]
+        print("prev_d = ", prev_d, "size of prev_d = ", len(prev_d))
+        # calculate N and b
+        N[j], b[j] = RPE_subframe_slt_lte(d, prev_d)
 
         # N is already an int, it's already quantized
 
         # quantize b
         print("b = ", b[j])
-        if b[j] <= 0.2:
+        if b[j] <= DLB(0):
             bc[j] = 0
-        elif b[j] > 0.2 and b[j] <= 0.5:
+        elif b[j] > DLB(0) and b[j] <= DLB(1):
             bc[j] = 1
-        elif b[j] > 0.5 and b[j] <= 0.8:
+        elif b[j] > DLB(1) and b[j] <= DLB(2):
             bc[j] = 2
-        elif b[j] > 0.8:
+        elif b[j] > DLB(2):
             bc[j] = 3
-        else: 
-            bc[j] = 0
-        print("bc = ", bc, "type of bc = ", type(bc[j]), ", number of bc bits = ", bc[j].bit_count())
-
         
         ## Prediction ##
 
         # N is just an int, no need to decode
         # decode b
-        if bc[j] == 0:
-            bd[j] = 0.1
-        elif bc[j] == 1:
-            bd[j] = 0.35
-        elif bc[j] == 2:
-            bd[j] = 0.65
-        elif bc[j] == 3:
-            bd[j] = 1
-        else:
-            bd[j] = 0.1
+        bd[j] = QLB(bc[j])
 
-        print("bd = ", bd, "type of bd = ", type(bd[j]))
         e = numpy.zeros(160)
-        d_predict = numpy.zeros(160)
+        d_predict = numpy.zeros(40)
         for i in range(0, 40):
             # calculate prediction
-            d_predict[j*40 + i] = bd[j] * d_total[120 + j*40 + i - N[j]]
+            d_predict[i] = bd[j] * prev_d[120 + i - N[j]]
 
             # calculate residual
-            e[j*40 + i] = d_current[j*40 + i] - d_predict[j*40 + i]
+            e[j*40 + i] = d[i] - d_predict[i]
 
             ## Synthesis ##
             # calculate reconstructed st residual
-            # is the index for d_reconstruct here correct? 
-            d_reconstruct[j*40 + i] = e[j*40 + i] + d_predict[j*40 + i]
+            d_reconstruct[j*40 + i] = e[j*40 + i] + d_predict[i]
 
-        print("d_predict = ", d_predict, ", size of d_predict = ", len(d_predict))
-        print("e = ", e, ", size of e = ", len(e))
-        print("d_reconstruct = ", d_reconstruct, ", size of d_reconstruct = ", len(d_reconstruct))
-
+    print("N = ", N)
+    #print("bc = ", bc, "type of bc = ", type(bc[j]), ", number of bc bits = ", bc[j].bit_count())
+    #print("bd = ", bd, "type of bd = ", type(bd[j]))
+    print("d_predict = ", d_predict, ", size of d_predict = ", len(d_predict))
+    print("e = ", e, ", size of e = ", len(e))
+    print("d_reconstruct = ", d_reconstruct, ", size of d_reconstruct = ", len(d_reconstruct))
 
 
     return LARc, curr_frame_st_residual, N, bc, e
@@ -204,51 +211,38 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
 
 
 
-def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray, j: int, prev_frame_d: numpy.ndarray):
-
-    # I do not like some of these names, rename
-    d_current = d
-    d_reconstruct = prev_d
-    d_prev = prev_frame_d
-    d_total = numpy.array([])
+def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
 
     # find N=λ maximizer of auto-correlation Rj(λ)
     R = 0
     max_R = 0
     maximizer_lamda = 40
 
-    # include subframes of previous frame in our search
-    d_total = numpy.concatenate((d_prev[range(40, 160)], d_reconstruct[range(0, 40*j)]))
-    d_total = numpy.concatenate((d_total, d_current[range(40*j, 40*(j + 1))]))
-    print("iteration j = ", j)
-    print("length of d_total = ", len(d_total))
     for lamda in range(40,121):
         for i in range(0,40):
-            R = R + d_current[40*j + i] * d_total[120 + 40*j + i - lamda]
-        #print("lamda = ", lamda, ", R = ", R)
-
+            R = R + d[i] * prev_d[120 + i - lamda]
         # keep max R and maximizing λ
         if R > max_R:
             max_R = R
             maximizer_lamda = lamda
 
     N = maximizer_lamda
-    print("N = ", N)
-    print("max R = ", max_R)
+    #print("N = ", N)
+    #print("max R = ", max_R)
 
     # calculate b
     b_numerator = 0
     b_denominator = 0
 
     for i in range(0,40):
-        b_numerator = b_numerator + d_current[40*j + i] * d_total[120 + 40*j + i - N]
-        b_denominator = b_denominator + d_total[120 + 40*j + i - N] * d_total[120 + 40*j + i - N]
+        b_numerator = b_numerator + d[i] * prev_d[120 + i - lamda]
+        b_denominator = b_denominator + prev_d[120 + i - lamda] * prev_d[120 + i - lamda] 
 
-    print("b_numerator = ", b_numerator)
-    print("b_denominator = ", b_denominator)
+    #print("b_numerator = ", b_numerator)
+    #print("b_denominator = ", b_denominator)
     b = b_numerator / b_denominator
 
-    return N, b, d_total
+    return N, b
 
 ###################################
 ######## HELPER FUNCTIONS #########
@@ -291,3 +285,21 @@ def B(i):
         return -2.235
     else:
         return None
+
+def QLB(i):
+    if i == 0:
+        return 0.1
+    elif i == 1:
+        return 0.35
+    elif i == 2:
+        return 0.65
+    elif i == 3:
+        return 1
+        
+def DLB(i):
+    if i == 0:
+        return 0.2
+    elif i == 1:
+        return 0.5
+    elif i == 2:
+        return 0.8

@@ -31,10 +31,12 @@ for j in range(0,iterations):
         s[i - offset] = audio_data[i]
 
     # encoder
-    LARc,curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, prev_frame_st_residual)
+    LARc,curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
+                                                                                prev_frame_st_residual)
 
     # decoder
-    S0=decoder.RPE_frame_st_decoder(LARc,curr_frame_st_residual)
+    S0, curr_frame_st_residual = decoder.RPE_frame_st_decoder(LARc, curr_frame_st_residual, N, 
+                                                              bc, curr_frame_ex_full, prev_frame_st_residual)
     #print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
 
     all_frames.append(S0)
