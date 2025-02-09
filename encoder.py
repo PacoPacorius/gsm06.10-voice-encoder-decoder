@@ -238,8 +238,8 @@ def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
 
     for i in range(0,40):
         # not taking any chances
-        b_numerator = b_numerator + (d[i] * prev_d[120 + i - lamda])
-        b_denominator = b_denominator + (prev_d[120 + i - lamda] * prev_d[120 + i - lamda])
+        b_numerator = b_numerator + (d[i] * prev_d[120 + i - N])
+        b_denominator = b_denominator + (prev_d[120 + i - N] * prev_d[120 + i - N])
 
     #print("b_numerator = ", b_numerator)
     #print("b_denominator = ", b_denominator)
