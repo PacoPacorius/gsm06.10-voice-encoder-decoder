@@ -14,7 +14,7 @@ audio_array = numpy.array([], dtype=numpy.float64)
 prev_frame_st_residual = numpy.zeros(160)
 
 # read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
+sample_rate,audio_data_o = audio_wrapper.scipy_read_data("tone.wav")
 iterations = len(audio_data_o) // 160     # // for integer division
 
 
@@ -34,9 +34,12 @@ for j in range(0,iterations):
     LARc, curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
                                                                                 prev_frame_st_residual)
 
+    #print('main encoder output curr_frame_st_residual = ', curr_frame_st_residual)
+
     # decoder
-    S0, curr_frame_st_residual = decoder.RPE_frame_st_decoder(LARc, curr_frame_st_residual, N, 
+    S0, curr_frame_st_residual = decoder.RPE_frame_st_decoder(LARc, N, 
                                                               bc, curr_frame_ex_full, prev_frame_st_residual)
+    #print('main decoder output curr_frame_st_residual = ', curr_frame_st_residual)
     #print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
 
     all_frames.append(S0)

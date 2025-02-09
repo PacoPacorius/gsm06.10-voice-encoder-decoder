@@ -131,7 +131,8 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print()
 
     j = 0
-    d_prev = prev_frame_st_residual 
+    prev_d = numpy.zeros(120)
+    #d_prev = prev_frame_st_residual 
     d_current = curr_frame_st_residual
     d_reconstruct = numpy.zeros(160)
     N = [0] * 4
@@ -189,6 +190,7 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
         for i in range(0,40):
             # calculate prediction
             d_predict[i] = bd[j] * prev_d[120 + i - N[j]]
+            #d_predict[i] = prev_d[120 + i - N[j]]
 
             # calculate residual
             e[j*40 + i] = d[i] - d_predict[i]
@@ -207,6 +209,7 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
 
     # comment this line out to revert to 1o epipedo
     curr_frame_st_residual = d_reconstruct
+
     return LARc, curr_frame_st_residual, N, bc, e
 
 

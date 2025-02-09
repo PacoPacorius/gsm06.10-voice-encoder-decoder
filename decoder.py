@@ -6,7 +6,7 @@ from scipy.signal import lfilter
 import scipy
 from scipy.signal import dimpulse
 
-def RPE_frame_st_decoder(LARc: np.ndarray, curr_frame_st_resd: np.ndarray,
+def RPE_frame_st_decoder(LARc: np.ndarray, 
                          N: list[int], bc: list[int], curr_frame_ex_full: np.ndarray,
                          prev_frame_st_residual: np.ndarray):
 
@@ -15,7 +15,7 @@ def RPE_frame_st_decoder(LARc: np.ndarray, curr_frame_st_resd: np.ndarray,
  #############################
 
  QLB = np.array([0.1, 0.35, 0.65, 1])
-
+ prev_d = np.zeros(120)
  d_reconstruct = np.zeros(160)
  d_predict = np.zeros(40)
  bd = [0] * 4
@@ -47,7 +47,7 @@ def RPE_frame_st_decoder(LARc: np.ndarray, curr_frame_st_resd: np.ndarray,
  print()
  #print("decoder bd = ", bd)
  print("decoder d_reconstruct = ", d_reconstruct)
- print("decoder curr_frame_st_resd = ", curr_frame_st_resd)
+ #print("decoder curr_frame_st_resd = ", curr_frame_st_resd)
 
  # comment this to revert to 1o epipedo
  curr_frame_st_resd = d_reconstruct
