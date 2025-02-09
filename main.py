@@ -31,7 +31,7 @@ for j in range(0,iterations):
         s[i - offset] = audio_data[i]
 
     # encoder
-    LARc,curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
+    LARc, curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
                                                                                 prev_frame_st_residual)
 
     # decoder

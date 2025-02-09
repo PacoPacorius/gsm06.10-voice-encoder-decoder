@@ -30,7 +30,7 @@ def RPE_frame_st_decoder(LARc: np.ndarray, curr_frame_st_resd: np.ndarray,
   # prediction can be in subframes of previous frame
   prev_d = np.concatenate((prev_frame_st_residual[range((j+1) * 40, 160)], d_reconstruct[range(0, j*40)]))
   
-  for i in range(0, 40):
+  for i in range(0,40):
    d_predict[i] = bd[j] * prev_d[120 + i - N[j]]
  
    # calculate reconstructed st residual

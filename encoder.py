@@ -186,7 +186,7 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
 
         e = numpy.zeros(160)
         d_predict = numpy.zeros(40)
-        for i in range(0, 40):
+        for i in range(0,40):
             # calculate prediction
             d_predict[i] = bd[j] * prev_d[120 + i - N[j]]
 
@@ -205,6 +205,8 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print("d_reconstruct = ", d_reconstruct, ", size of d_reconstruct = ", len(d_reconstruct))
 
 
+    # comment this line out to revert to 1o epipedo
+    curr_frame_st_residual = d_reconstruct
     return LARc, curr_frame_st_residual, N, bc, e
 
 
@@ -235,8 +237,9 @@ def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
     b_denominator = 0
 
     for i in range(0,40):
-        b_numerator = b_numerator + d[i] * prev_d[120 + i - lamda]
-        b_denominator = b_denominator + prev_d[120 + i - lamda] * prev_d[120 + i - lamda] 
+        # not taking any chances
+        b_numerator = b_numerator + (d[i] * prev_d[120 + i - lamda])
+        b_denominator = b_denominator + (prev_d[120 + i - lamda] * prev_d[120 + i - lamda])
 
     #print("b_numerator = ", b_numerator)
     #print("b_denominator = ", b_denominator)
