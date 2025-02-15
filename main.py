@@ -14,8 +14,9 @@ audio_array = numpy.array([], dtype=numpy.float64)
 prev_frame_st_residual = numpy.zeros(160)
 
 # read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("tone.wav")
-iterations = len(audio_data_o) // 160     # // for integer division
+sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
+# how many frames until EOF?
+iterations = len(audio_data_o) // 160     
 
 
 # pre-processing
