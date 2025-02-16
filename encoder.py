@@ -109,6 +109,7 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
 
+    print('akd = ', akd, ' size of akd = ', len(akd))
     akd[1:]=-akd[1:]
     print('akd = ', akd, ' size of akd = ', len(akd))
     # apply FIR filter and calculate residual
@@ -190,7 +191,6 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
         for i in range(0,40):
             # calculate prediction
             d_predict[i] = bd[j] * prev_d[120 + i - N[j]]
-            #d_predict[i] = prev_d[120 + i - N[j]]
 
             # calculate residual
             e[j*40 + i] = d[i] - d_predict[i]
