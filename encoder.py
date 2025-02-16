@@ -130,9 +130,9 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print()
     print()
 
+    # declare vars
     j = 0
     prev_d = numpy.zeros(120)
-    #d_prev = prev_frame_st_residual 
     d_current = curr_frame_st_residual
     d_reconstruct = numpy.zeros(160)
     N = [0] * 4
@@ -240,7 +240,6 @@ def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
     b_denominator = 0
 
     for i in range(0,40):
-        # not taking any chances
         b_numerator = b_numerator + (d[i] * prev_d[120 + i - N])
         b_denominator = b_denominator + (prev_d[120 + i - N] * prev_d[120 + i - N])
 

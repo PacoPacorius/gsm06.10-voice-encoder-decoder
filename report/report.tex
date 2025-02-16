@@ -1,3 +1,16 @@
+% TODO: 
+% 1. μήπως να σταματήσουμε να επιστρέφουμε το curr_frame_st_residual από τον 
+%   κωδικοποιητή του 2ου επιπεδου;
+% 2. Στο τέλος του κωδικοποιητή του 2ου επιπέδου, αληθεύει ότι το 
+%   d_reconstruct είναι σχεδόν ίδιο με το curr_frame_st_residual, γιατί το
+%   μόνο που κβαντίζουμε είναι το prediction gain b;
+% 3. Εισαγωγή πέρα από το abstract χρειαζόμαστε;
+% 4. Να μετακινηθεί το pre-processing έτσι ώστε να συμβαίνει κάθε frame και
+%   όχι σε όλο το αρχείο απευθείας;
+% 5. Στον κωδικοποιητή του 1ου επιπέδου η εκφώνηση λέει να έχουμε το 
+%   prev_frame_st_residual παρόλο που δεν το χρησιμοποιούμε. Εμείς δεν το
+%   έχουμε βάλει. Τι κάνουμε;
+
 % compile with xelatex
 \documentclass{article} 
 \usepackage{polyglossia} 
@@ -14,11 +27,12 @@
     urlcolor=cyan, 
     pdfinfo = {% Title = Συστήματα
         Πολυμέσων Υλοποίηση GSM 06.10 Author = Χρήστος Μάριος Περδίκης, Γιώργος
-        Β.  Producer = XeLaTeX 
+        Βακασίρης  Producer = XeLaTeX 
     } 
 }
 
-\def\equationautorefname{Εξίσωση}
+\def\equationautorefname{ε\-ξί\-σω\-ση}
+\def\subsectionautorefname{υ\-πο\-ε\-νό\-τη\-τα}
 \setmainlanguage{greek}
 \setotherlanguage{english}
 \title{Υλοποίηση κωδικοποιητή GSM 06.10 Συστήματα Πολυμέσων} 
@@ -46,7 +60,7 @@
 \emph{Εισαγωγή;;;;}
 
 Αναφορά εργασίας. Υλοποιήθηκε το πρότυπο ETSI GSM 06.10.
-\section{Προετοιμασία - main.py}
+\section{Προετοιμασία --- main.py}
 Το πρόγραμμά μας τρέχει με την εντολή ``\verb|python main.py|''.  Το αρχείο
 \verb|main.py| περιέχει τη λογική δομή του προγράμματος, από εκεί
 καλούνται όλες οι συναρτήσεις που υλοποιούν την κωδικοποίηση.
@@ -89,7 +103,7 @@ residual του προηγούμενου frame με το short term residual τ�
 ακολουθεί η συνάρτηση pre\_emphasis, η οποία υλοποιεί τη διαδικασία 
 pre-emphasis όπως περιγράφεται στην παράγραφο 3.1.2 του προτύπου. 
 
-\section{Short Term Analysis} 
+\section{Short Term Analysis --- 1o επίπεδο} 
 \subsection{Κωδικοποιητής}
 Η υλοποίηση του κωδικοποιητή βρίσκεται στο αρχείο \verb|encoder.py|.
 Η συνάρτηση αυτοσυχέτισης 
@@ -142,7 +156,7 @@ numpy.linalg.solve. Ο πίνακας $w$ περιέχει τους 8 βέλτι
 και κατόπιν τα αποκβαντίζουμε (παράγραφος 3.1.8). Για τον κβαντισμό και τον 
 αποκβαντισμό των Log-Area Ratios υλοποιήθηκαν και οι βοηθητικές συναρτήσεις
 \verb|Nint|, \verb|A| και \verb|B|, ο ορισμός τους βρίσκεται στο τέλος του
-αρχείου \verb|encoder.py|. Μετατρέπουμε τα αποκωδικοποιημένα Log-Area Ratios
+αρχείου encoder.py\@. Μετατρέπουμε τα αποκωδικοποιημένα Log-Area Ratios
 σε αποκωδικοποιημένους συντελεστές ανάκλασης. Καλούμε την συνάρτηση 
 hw\_ut\-ils.ref\-lection\_co\-eff\_to\_poly\-nomial\_co\-eff με είσοδο
 το array \verb|krd| των αποκωδικοποιημένων συντελεστών ανάκλασης, για έξοδο 
@@ -158,20 +172,162 @@ hw\_ut\-ils.ref\-lection\_co\-eff\_to\_poly\-nomial\_co\-eff με είσοδο
 δηλαδή $d = s \ast akd$. Αυτό προκύπτει από το βήμα (β) 1 της παραγράφου 
 2.1.2 της εκφώνησης της εργασίας αλλά και από την παρακάτω απόδειξη:
 
-\begin{align}
+\begin{align*}
     \hat{s}(n) &= \sum_{k=1}^8 a_ks(n-k) \\
                    &= a_1 s(n - 1) + a_2 s(n - 2) + \ldots \\
               d(n) &= s(n) - \hat{s}(n) \\
                    &= s(n) - a_1 s(n - 1) + a_2 s(n - 2)+ \ldots \\
                    &= \sum_{k=0}^8 a'_ks(n-k)
-\end{align}
+\end{align*}
 
-όπου $a'_k = akd$, το οποίο ισχύει. (Πωωωω τρέλανέ μας δικέ μουυυ!!!)
+όπου $a'_k = akd$, το οποίο ισχύει. 
 
 Δεν υλοποιήθηκε interpolation των τιμών των Log-Area Ratios στον κωδικοποιητή μας.
 
 \emph{Κανονικά σαν είσοδο του κωδικοποιητή θέλουμε και το prev\_frame\_st\_resd, 
 παρόλο που δεν το χρησιμοποιούμε, τι κάνουμε με αυτό;}
+
+Ο κωδικοποιητής του 1ου επιπέδου επιστρέφει με τη σειρά 
+\begin{itemize}
+    \item τα κωδικοποιημένα \verb|LARc|,
+    \item το \verb|d_reconstruct| ως \verb|curr_frame_st_residual|
+    \item τη λίστα \verb|N|
+    \item τη λίστα κβαντισμένων \verb|bc| 
+    \item το long term residual \verb|e| ως \verb|curr_frame_ex_full|
+\end{itemize}
+
 \subsection{Αποκωδικοποιητής}
+Θα έρθει η ώρα του\ldots
+
+\section{Long Term Analysis --- 2ο επίπεδο}
+
+Αλλαγές σε εισόδους και εξόδους συναρτήσεων; Υπάρχουν καν αλλαγές;
+
+\subsection{Κωδικοποιητής}\label{lt_coder}
+Ο κώδικας που περιγράφουμε στην~\autoref{lt_coder} ακολουθεί την υλοποίηση του short term analysis
+στον κωδικοποιητή του 1ου επιπέδου. Η πρόβλεψη του pitch θα
+γίνει από το array \verb|prev_d|. Είναι διαφορετικό για κάθε subframe και
+αποτελείται συνολικά από 120 στοιχεία. Στα πρώτα τρία subframes,
+επιτρέπουμε η πρόβλεψη να γίνει από το (ανακατα\-σκευασμέ\-νο)
+short term residual του προηγούμενου frame. Πιο συγκεκριμένα και
+λαμβάνοντας υπόψιν ότι $N \in [40,120]$, όταν βρισκόμαστε στο
+πρώτο subframe: 
+
+\begin{equation}
+    prev\_d = prev\_frame\_st\_residual[40\ldots160]
+    \label{prev_d}
+\end{equation}
+
+δηλα\-δή το \verb|prev_d| αποτελείται από τα τρία τελευταία subframes του
+προηγούμενου frame. Εφόσον η πρόβλεψη γίνεται από subframes
+παρελθοντικού frame, αυτά είναι ήδη ανακατασκευασμένα. Όταν
+βρισκόμαστε στο 2o subframe: 
+
+\begin{equation}
+    prev\_d = prev\_frame\_st\_residual[80\ldots160] + curr\_frame\_st\_residual[0\ldots40] 
+\end{equation}
+
+το \verb|prev_d| αποτε\-λείται από
+τα δύο τελευταία subframes του προηγούμενου frame και 
+ακολουθεί το πρώτο --- ανακατασκευασμένο πλέον --- subframe
+του τωρινού frame. Με παρόμοιο τρόπο, στο 3ο subframe το \verb|prev_d|
+αποτελείται από το τελευταίο subframe του προηγούμενου frame
+και τα δύο πρώτα subframes του τωρινού frame και στο 4ο subframe 
+αποτελείται από τα 3 τρία προηγούμενα subframes του τωρινού frame.
+Προφανώς τα 40 τελευταία στοιχεία του \verb|prev_d| δεν θα επιλεχθούν 
+ποτέ από την πρόβλεψη εφόσον $N \geq 40$, υπάρχουν για να 
+απλουστεύσουν τη διαχείριση των indices.
+
+Καλούμε τη συνάρτηση RPE\_subframe\_slt\_lte() με εισόδους το τωρινό 
+subframe \verb|d| και το \verb|prev_d| για να υπολο\-γίσουμε τα \verb|b|, 
+\verb|N|. Υπολογίζουμε τη συνέλιξη:
+
+\begin{equation}
+    R(\lambda) = \sum_{i=0}^{39} d[i] * prev\_d[120 + i - \lambda],\;\;\lambda \in [40,120]
+\end{equation}
+
+Τα indices των \verb|d|, \verb|prev_d| προκύπτουν από την εξίσωση 3.9 
+του προτύπου. Για το \verb|d|, $k_o = 0$ (όπου $k_o$ το index του πρώτου 
+στοιχείου του τωρινού frame) και αναφέρεται ήδη μόνο στο τωρινό
+subframe, άρα το $j * 40$ είναι περιττό. Για το \verb|prev_d|, το 
+$k_j = 120$ πάντα, εφόσον το \verb|prev_d| είναι ουσιαστικά ένα 
+sliding window που για κάθε τωρινό subframe περιέχει τα τρία προηγούμενα 
+subframes. Ελέγχουμε ποιά $R(\lambda)$ είναι η μέγιστη και θέτουμε 
+ως \verb|N| το $\lambda$ που τη μεγιστοποίησε. Έπειτα υπολογίζουμε
+το \verb|b| σύμφωνα με την εξίσωση 3.11 του προτύπου. Ο αριθμητής
+του \verb|b| είναι ίσος με $R(N)$ και ο παρανομαστής του
+$\sum_{i=0}^{39}(prev\_d[120 + i - N])^2$.
+
+Τα \verb|N|, \verb|b| που επιστρέφει η RPE\_subframe\_slt\_lte() 
+αποθηκεύεται το καθένα σε μια λίστα τεσσάρων στοιχείων $N[j]$, $b[j]$ 
+ένα για κάθε διαφορετικό subframe. Κβαντίζουμε τα 
+\verb|N[j]|, \verb|b[j]| (κάθε φορά μόνο του τωρινού subframe). 
+Το \verb|N[j]| είναι ήδη ένας ακέραιος οπότε
+είναι ήδη κβαντισμένος. Το \verb|b[j]| κβαντίζεται σύμφωνα με την
+εξίσωση 3.15 του προτύπου σε \verb|bc[j]|. Υλοποιήσαμε τις βοηθητικές 
+συναρτήσεις QLB() και DLB(), όπως αυτές περιγρά\-φονται από τον πίνακα 
+3.3 του προτύπου. Οι QLB() και DLB() βρίσκονται στο τέλος του αρχείου
+encoder.py\@.
+
+Για να υλοποιήσουμε το στάδιο της πρόβλεψης αρχικά αποκβαντίζουμε το 
+\verb|bc[j]| σε \verb|bd[j]| με τη βοήθεια της QLB. Υπολογίζουμε την πρόβλεψη 
+\verb|d_predict|:
+
+\begin{equation}\label{d_predict}
+    d\_predict[i] = \sum_{i=0}^{39} bd[j] * prev\_d[120 + i - N[j]]
+\end{equation}
+
+και το long term residual \verb|e|:
+
+\begin{equation}
+    e[j*40 + i] =  d[i] - d\_predict[i]
+\end{equation}
+
+Το \verb|e| εμπεριέχει το σφάλμα και για τέσσερα subframes του frame,
+για αυτό είναι αναγκαία η προσθήκη του offset $j * 40$, όπου $j$ 
+προσδιορίζει σε ποιό subframe βρισκόμαστε (για $j = 0$ βρισκόμαστε 
+στο πρώτο subframe του τωρινού frame, για $j = 1$ στο δεύτερο κλπ.).
+Τέλος, υπολογίζουμε το ανακατασκευασμένο short term residual 
+\verb|d_reconstruct| από το \verb|e|:
+
+\begin{equation}\label{d_recon}
+    d\_reconstruct[j*40 + i] = e[j*40 + i] + d\_predict[i]
+\end{equation}
+
+Εφόσον δεν υλοποιούμε το excitation computation στο 2ο επίπεδο
+και δεν κβαντίζουμε το \verb|e|, το \verb|d_reconstruct| ουσιαστικά
+σχεδόν ταυτίζεται με το \verb|curr_frame_st_residual|. Χάνουμε μόνο 
+πληροφορία από το \verb|d_predict| λόγω της κβάντισης του \verb|b|.
+\emph{Ισχύει αυτό;;;;}
+
+\emph{Μήπως να σταματήσουμε να επιστρέφουμε το curr\_frame\_st\_residual 
+στο 2ο επίπεδο;}
+
+Ο κωδικοποιητής του 2ου επιπέδου επιστρέφει με τη σειρά 
+\begin{itemize}
+    \item τα κωδικοποιημένα \verb|LARc|,
+    \item το \verb|d_reconstruct| ως \verb|curr_frame_st_residual|
+    \item τη λίστα \verb|N|
+    \item τη λίστα κβαντισμένων \verb|bc| 
+    \item το long term residual \verb|e| ως \verb|curr_frame_ex_full|
+\end{itemize}
+
+
+\subsection{Αποκωδικοποιητής}
+Σε αντίθεση με τον κωδικοποιητή, η υλοποίηση του 2ου επιπέδου στον 
+αποκωδικοποιητή βρίσκεται πριν την υλοποίηση του 1ου επιπέδου. Η
+είσοδος του αποκωδικοποιητή είναι όλες οι έξοδοι του κωδικοποιητή
+μαζί με το \verb|prev_frame_st_residual|.
+Ξεκινάμε αποκβαντίζοντας το \verb|b| με την βοηθητική συνάρτηση 
+QLB() (βρίσκεται και στο τέλος του decoder.py)\@. Το 
+\verb|N| είναι ήδη αποκβαντισμένο εφόσον είναι ακέραιος. 
+Ξανακατασκευάζουμε το \verb|prev_d| όπως περιγράψαμε στην 
+\autoref{lt_coder} αυτής της αναφοράς. Υπολογίζουμε το \verb|d_predict| 
+από την~\autoref{d_predict},
+και έπειτα το \verb|d_reconstruct| από την~\autoref{d_recon}, με τη μόνη 
+διαφορά ότι χρησιμοποιούμε το \verb|curr_frame_ex_full| αντί για το
+\verb|e|. Τέλος, θέτουμε $\verb|curr_frame_st_residual| = \verb|d_reconstruct|$,
+έτσι ώστε ο αποκωδικοποιητής του 1ου επιπέδου να χρησιμοποιήσει το 
+ανακατασκευασμένο short term residual.
 
 \end{document}
