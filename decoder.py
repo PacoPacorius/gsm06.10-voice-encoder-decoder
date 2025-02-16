@@ -93,7 +93,7 @@ def RPE_frame_st_decoder(LARc: np.ndarray,
  H=np.empty(9)
  c=1e-32
 
- a_k=a_k[1:]
+ a_k=-a_k[1:]
  for z in range(1,len(H)):
   H[z]=1/(1-sum(a_k[k]*((z+c)**(-k-1)) for k in range(len(a_k))))
  H[0]=1
@@ -127,14 +127,14 @@ def RPE_frame_st_decoder(LARc: np.ndarray,
 
  #applying lfilter to S
 
- Sof = lfilter(b1, a1, S)
+ S_poste = lfilter(b1, a1, S)
 
- #creating filter to apply to Sof
+ #creating filter to apply to S_poste
 
  b2 = [1, -alpha]
  a2 = [1, -1]
 
- S0= lfilter(b2, a2, Sof)
+ S0= lfilter(b2, a2, S_poste)
 
 
 
