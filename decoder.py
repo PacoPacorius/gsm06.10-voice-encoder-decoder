@@ -24,21 +24,22 @@ def RPE_frame_st_decoder(LARc: np.ndarray,curr_frame_st_resd: np.ndarray
   if abs(LAR[i])<0.675:
     r[i]=LAR[i]
   elif (0.675<=abs(LAR[i])) and (abs(LAR[i])<1.225):
-    r[i]=np.sign(LAR[i])*(0.500*abs(LAR[i])+0.337500)
+    r[i]=np.sign(LAR[i])*((0.500*abs(LAR[i]))+0.337500)
   elif (1.225<=abs(LAR[i])) and (abs(LAR[i])<=1.625):
-    r[i]=np.sign(LAR[i])*(0.125*abs(LAR[i])+0.796875)
+    r[i]=np.sign(LAR[i])*((0.125*abs(LAR[i]))+0.796875)
 
  #code for converting r to ak
 
- kr=r
- print('kr',kr)
- a_k, e_final =ut.reflection_coeff_to_polynomial_coeff(kr)
+
+ print('r',r)
+ a_k, e_final =ut.reflection_coeff_to_polynomial_coeff(r)
 
  #constructing the decoding filter H using the ak values
  H=np.empty(9)
  c=1e-32
 
- a_k=a_k[1:]
+ a_k=-a_k[1:]
+ print('a_k',a_k)
  for z in range(1,len(H)):
   H[z]=1/(1-sum(a_k[k]*((z+c)**(-k-1)) for k in range(len(a_k))))
  H[0]=1
@@ -69,24 +70,19 @@ def RPE_frame_st_decoder(LARc: np.ndarray,curr_frame_st_resd: np.ndarray
  #S0[k]=Sof[k]+S0[k−1]−alpha*Sof[k−1],reverse offset
 
  #turning the decoding equations to filters
- #might change that
-
-
- b1 = [1] #filter coefficients
+ b1 = [1]  # filter coefficients
  a1 = [1, -beta]
 
- #applying lfilter to S
+ # applying lfilter to S
 
- Sof = lfilter(b1, a1, S)
+ S_poste = lfilter(b1, a1, S)  # reverting pre emphasis
 
- #creating filter to apply to Sof
+ # creating filter to apply to S_poste
 
  b2 = [1, -alpha]
  a2 = [1, -1]
 
- S0= lfilter(b2, a2, Sof)
-
-
+ S0 = lfilter(b2, a2, S_poste)  # reverting offset
 
  #it should be the same as before
  return S0

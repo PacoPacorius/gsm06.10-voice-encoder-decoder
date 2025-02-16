@@ -109,7 +109,8 @@ def RPE_frame_st_coder(s: numpy.ndarray):
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
 
-
+    print('akd = ', akd, ' size of akd = ', len(akd))
+    akd[1:] = -akd[1:]
     print('akd = ', akd, ' size of akd = ', len(akd))
     # apply FIR filter and calculate residual
     curr_frame_st_residual =numpy.convolve(s, akd, 'same')

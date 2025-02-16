@@ -20,8 +20,8 @@ def offset_compensation(s0: numpy.ndarray):
 def pre_emphasis(sof: numpy.ndarray):
     s = numpy.empty(len(sof.astype(numpy.float64)))
 
-    b2 = [1]
-    a2 = [1, -beta]
+    b2 = [1, -beta]
+    a2 = [1]
 
 
     s = lfilter(b2, a2, sof)
