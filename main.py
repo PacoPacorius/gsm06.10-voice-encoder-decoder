@@ -26,10 +26,12 @@ audio_data = preprocessing.pre_emphasis(audio_data_of)
 #iterations = 1
 for j in range(0,iterations):
     # initialize s0
-    s = numpy.zeros(160)
+    s_new = numpy.zeros(160)
     offset = j * 160
     for i in range (offset, offset + 160):
-        s[i - offset] = audio_data[i]
+        s_new[i - offset] = audio_data[i]
+    s_of = preprocessing.offset_compensation(s_new)
+    s    = preprocessing.pre_emphasis(s_of)
 
     # encoder
     LARc, curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
@@ -40,9 +42,6 @@ for j in range(0,iterations):
     # decoder
     S0, curr_frame_st_residual = decoder.RPE_frame_st_decoder(LARc, N, 
                                                               bc, curr_frame_ex_full, prev_frame_st_residual)
-    #print('main decoder output curr_frame_st_residual = ', curr_frame_st_residual)
-    #print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
-
     all_frames.append(S0)
     prev_frame_st_residual = curr_frame_st_residual
 
