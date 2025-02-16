@@ -16,15 +16,15 @@ iterations = len(audio_data_o) // 160     # // for integer division
 all_frames = []
 audio_array = numpy.array([], dtype=numpy.float64)
 
-audio_data_of = preprocessing.offset_compensation(audio_data_o)
-audio_data = preprocessing.pre_emphasis(audio_data_of)
 #iterations = 1
 for j in range(0,iterations):
     # initialize s0
-    s = numpy.zeros(160)
+    s_new = numpy.zeros(160)
     offset = j * 160
     for i in range (offset, offset + 160):
-        s[i - offset] = audio_data[i]
+        s_new[i - offset] = audio_data_o[i]
+    s_of = preprocessing.offset_compensation(s_new)
+    s    = preprocessing.pre_emphasis(s_of)
 
     # offset compensation and pre-emphasis
     #print('s0 = ', s0, ' s0 length: ', len(s0))
@@ -55,4 +55,4 @@ output_filename = 'reconstructed_audio.wav'
 scipy.io.wavfile.write(output_filename, sample_rate, audio_array)
 
 print('audio array = ', audio_array)
-print('audio data/starter = ', audio_data)
+print('audio data/starter = ', audio_data_o)
