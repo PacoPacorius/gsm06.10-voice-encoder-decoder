@@ -210,7 +210,7 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
         elif b[j] > DLB(2):
             bc[j] = 3
         
-        bitstream.append(pack('uint:2', bc[j])) #appending b encoded to the bitstream
+        bitstream.append(pack('uint:2', bc[j])) # appending b encoded to the bitstream
 
         ## Prediction ##
 
@@ -230,9 +230,9 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
 
         # the process below is done for each subframe, each subframe has 4 xm sequences each
         for k in range(40):
-
             # convolving according to the standard
             x[k] = sum(He[n] * e[j*40 + k] for n in range(len(He))) 
+
 
         # these xm are for one subframe only
         for d in range(13):
