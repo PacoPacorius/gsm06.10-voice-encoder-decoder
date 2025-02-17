@@ -3,55 +3,46 @@ import wave
 import numpy
 import scipy
 
-import audio_wrapper
 import encoder
 import preprocessing
 import decoder
 
-
-# read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
-iterations = len(audio_data_o) // 160     # // for integer division
-
+# declare global variables
 all_frames = []
 audio_array = numpy.array([], dtype=numpy.float64)
+prev_frame_st_residual = numpy.zeros(160)
 
-#iterations = 1
+# read data from wav file 
+sample_rate, audio_data_o = scipy.io.wavfile.read("ena_dio_tria.wav")
+# how many frames until EOF?
+iterations = len(audio_data_o) // 160     
+
+
+#iterations = 1     # uncomment, to only process one frame, debugging purposes
 for j in range(0,iterations):
     # initialize s0
     s_new = numpy.zeros(160)
     offset = j * 160
     for i in range (offset, offset + 160):
         s_new[i - offset] = audio_data_o[i]
+    # pre-processing
     s_of = preprocessing.offset_compensation(s_new)
     s    = preprocessing.pre_emphasis(s_of)
 
-    # offset compensation and pre-emphasis
-    #print('s0 = ', s0, ' s0 length: ', len(s0))
-    #print('sof = ', sof, ' sof length: ', len(sof))
-    #s = s0
-    #print('s = ', s, ' s length: ', len(s))
+    # encoder
+    LARc, curr_frame_st_residual = encoder.RPE_frame_st_coder(s)
 
-    #print('main after pre-processing s0 = ', s0, ' s0 length: ', len(s0))
-    # short term analysis
-    LARc,curr_frame_st_residual=encoder.RPE_frame_st_coder(s)
-
-        #decoder
-
-    S0=decoder.RPE_frame_st_decoder(LARc,curr_frame_st_residual)
-    #print('iteration j = ', j, ', samples [', j * 160, ', ', (j+1) * 160, '] out of ', len(audio_data))
+    # decoder
+    S0 = decoder.RPE_frame_st_decoder(LARc, curr_frame_st_residual)
 
     all_frames.append(S0)
-    #s = numpy.ravel(S0)
-    #audio_array=numpy.concatenate((audio_array, s))
-audio_array =numpy.asarray(all_frames)
-audio_array= numpy.ravel(audio_array)
-#print('type of audio_array element = ', type(audio_array[0]))
-audio_array = audio_array.astype(numpy.int16)       # our wav files won't always have 16-bit samples!!!
-#audio_array = audio_array.astype(numpy.uint8)       # our wav files won't always have 16-bit samples!!!
-#audio_array = audio_array.astype(numpy.int32)       # our wav files won't always have 16-bit samples!!!
-output_filename = 'reconstructed_audio.wav'
+    prev_frame_st_residual = curr_frame_st_residual
 
+audio_array = numpy.asarray(all_frames)
+audio_array = numpy.ravel(audio_array)
+audio_array = audio_array.astype(numpy.int16)       # our wav files will always have 16-bit samples
+
+output_filename = 'reconstructed_audio.wav'
 scipy.io.wavfile.write(output_filename, sample_rate, audio_array)
 
 print('audio array = ', audio_array)
