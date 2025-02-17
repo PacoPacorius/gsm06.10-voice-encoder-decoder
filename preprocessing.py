@@ -5,8 +5,7 @@ alpha = 32735 * (2**(-15))
 def offset_compensation(s0: numpy.ndarray):
     sof = numpy.empty(len(s0.astype(numpy.float64)))
 
-    print('alpha = ', alpha)
-    print('length of s0', len(s0))
+
     b1 = [1, -1]
     a1 = [1, -alpha]
 
@@ -20,7 +19,7 @@ def offset_compensation(s0: numpy.ndarray):
 def pre_emphasis(sof: numpy.ndarray):
     s = numpy.empty(len(sof.astype(numpy.float64)))
 
-    b2 = [1, -beta]
+    b2 = [1,-beta]
     a2 = [1]
 
 
