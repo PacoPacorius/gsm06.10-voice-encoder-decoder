@@ -1,7 +1,7 @@
 import numpy
 from scipy.signal import lfilter
-beta=28180*(2**(-15))
-alpha =32735*(2**(-15))
+beta  = 28180 * (2**(-15))
+alpha = 32735 * (2**(-15))
 def offset_compensation(s0: numpy.ndarray):
     sof = numpy.empty(len(s0.astype(numpy.float64)))
 

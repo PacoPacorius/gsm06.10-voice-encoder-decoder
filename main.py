@@ -3,7 +3,6 @@ import wave
 import numpy
 import scipy
 
-import audio_wrapper
 import encoder
 import preprocessing
 import decoder
@@ -14,13 +13,12 @@ audio_array = numpy.array([], dtype=numpy.float64)
 prev_frame_st_residual = numpy.zeros(160)
 
 # read data from wav file 
-sample_rate,audio_data_o = audio_wrapper.scipy_read_data("ena_dio_tria.wav")
+sample_rate, audio_data_o = scipy.io.wavfile.read("ena_dio_tria.wav")
 # how many frames until EOF?
 iterations = len(audio_data_o) // 160     
 
 
-
-#iterations = 1
+#iterations = 1     # uncomment, to only process one frame, debugging purposes
 for j in range(0,iterations):
     # initialize s0
     s_new = numpy.zeros(160)
@@ -34,9 +32,6 @@ for j in range(0,iterations):
     # encoder
     LARc, curr_frame_st_residual, N, bc, curr_frame_ex_full = encoder.RPE_frame_st_coder(s, 
                                                                                 prev_frame_st_residual)
-
-    #print('main encoder output curr_frame_st_residual = ', curr_frame_st_residual)
-
     # decoder
     S0, curr_frame_st_residual = decoder.RPE_frame_st_decoder(LARc, N, 
                                                               bc, curr_frame_ex_full, prev_frame_st_residual)

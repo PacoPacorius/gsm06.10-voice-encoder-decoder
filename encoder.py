@@ -9,8 +9,6 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
         for i in range (k, 160):
             # estimate autocorrelation in accordance to section 3.1.4
             rs[k] += s[i]*s[i-k]
-            #print('\ns(i) = ', s[i], 's(i-k) = ', s[i-k])
-    print('\n\nrs = ', rs, ' shape of rs = ', rs.shape)
 
     # Create w, R and r, matrices of the normal equations
     r = numpy.array([[rs[1]],
@@ -36,9 +34,6 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     w = numpy.zeros((0,8))
 
 
-    #print('r = ', r)
-    #print('R = ', R)
-    #print('w = ', w)
     # solve normal equation to w
     w = numpy.linalg.solve(R, r)
 
@@ -109,15 +104,11 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print('a = ', a, ' size of a = ', a.size, ' shape of a = ', a.shape)
 
 
-    print('akd = ', akd, ' size of akd = ', len(akd))
     akd[1:]=-akd[1:]
-    print('akd = ', akd, ' size of akd = ', len(akd))
     # apply FIR filter and calculate residual
     curr_frame_st_residual =numpy.convolve(s, akd, 'same')
     print('curr_frame_st_residual = ', curr_frame_st_residual, ' size of curr_frame_st_residual = ', curr_frame_st_residual.size)
 
-
-    #return LARc, curr_frame_st_residual
 
     #############################
     ######## 2ο Επίπεδο #########
@@ -136,9 +127,8 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     prev_d = numpy.zeros(120)
     d_current = curr_frame_st_residual
     d_reconstruct = numpy.zeros(160)
-    N = [0] * 4
-    b = [0] * 4
-    d_total = numpy.zeros([])
+    N  = [0] * 4
+    b  = [0] * 4
     bc = [0] * 4
     bd = [0] * 4
 
@@ -207,10 +197,8 @@ def RPE_frame_st_coder(s: numpy.ndarray, prev_frame_st_residual: numpy.ndarray):
     print("d_reconstruct = ", d_reconstruct, ", size of d_reconstruct = ", len(d_reconstruct))
 
 
-    # comment this line out to revert to 1o epipedo
-    curr_frame_st_residual = d_reconstruct
 
-    return LARc, curr_frame_st_residual, N, bc, e
+    return LARc, d_reconstruct, N, bc, e
 
 
 
@@ -223,8 +211,8 @@ def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
     max_R = 0
     maximizer_lamda = 40
 
-    for lamda in range(40,121):
-        for i in range(0,40):
+    for lamda in range(40, 121):
+        for i in range(0, 40):
             R = R + d[i] * prev_d[120 + i - lamda]
         # keep max R and maximizing λ
         if R > max_R:
@@ -240,7 +228,7 @@ def RPE_subframe_slt_lte(d: numpy.ndarray, prev_d: numpy.ndarray):
     b_denominator = 0
 
     for i in range(0,40):
-        b_numerator = b_numerator + (d[i] * prev_d[120 + i - N])
+        b_numerator   = b_numerator + (d[i] * prev_d[120 + i - N])
         b_denominator = b_denominator + (prev_d[120 + i - N] * prev_d[120 + i - N])
 
     #print("b_numerator = ", b_numerator)
